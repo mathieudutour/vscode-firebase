@@ -284,9 +284,11 @@ const allowTypes: AllowInfo[] = [
  * @see https://firebase.google.com/docs/reference/rules/rules#interfaces
  */
 const basicTypes: { [key: string]: TypeInfo } = {
+  // https://firebase.google.com/docs/reference/rules/rules.Boolean
   boolean: {
     about: 'Primitive type representing a boolean value, true or false.',
   },
+  // https://firebase.google.com/docs/reference/rules/rules.Bytes
   bytes: {
     about:
       "Byte literals are specified using a b declaration prefix followed by bytes represented as a sequence of characters, two-place hexadecimal values (for example, `b'\\x0F'`, not `b'\\xF'`), or three-place octal values (for example, `b'\\000'`, not `b'\\0'`). Character sequences are interpreted as UTF-8 encoded strings.",
@@ -310,6 +312,7 @@ const basicTypes: { [key: string]: TypeInfo } = {
       },
     },
   },
+  // https://firebase.google.com/docs/reference/rules/rules.Duration
   duration: {
     about:
       'Duration values are represented as seconds plus fractional seconds in nanoseconds.',
@@ -328,12 +331,15 @@ const basicTypes: { [key: string]: TypeInfo } = {
       },
     },
   },
+  // https://firebase.google.com/docs/reference/rules/rules.Float
   float: {
     about: 'Primitive type representing a 64-bit IEEE floating point number.',
   },
+  // https://firebase.google.com/docs/reference/rules/rules.Integer
   integer: {
     about: 'Primitive type representing a signed 64-bit integer value.',
   },
+  // https://firebase.google.com/docs/reference/rules/rules.LatLng
   latlng: {
     about: 'Type representing a geopoint.',
     methods: {
@@ -355,6 +361,7 @@ const basicTypes: { [key: string]: TypeInfo } = {
       },
     },
   },
+  // https://firebase.google.com/docs/reference/rules/rules.List
   list: {
     about: 'List type. Items are not necessarily homogenous.',
     methods: {
@@ -405,6 +412,7 @@ const basicTypes: { [key: string]: TypeInfo } = {
       },
     },
   },
+  // https://firebase.google.com/docs/reference/rules/rules.Map
   map: {
     about:
       'Map type, used for simple key-value mappings.\n\nKeys must be of type String.',
@@ -438,6 +446,7 @@ const basicTypes: { [key: string]: TypeInfo } = {
       },
     },
   },
+  // https://firebase.google.com/docs/reference/rules/rules.MapDiff
   mapdiff: {
     about:
       'The MapDiff type represents the result of comparing two Map objects.\n\nThere is no MapDiff literal for use in creating diffs. MapDiff objects are returned by calls to the `Map#diff` function.',
@@ -474,9 +483,11 @@ const basicTypes: { [key: string]: TypeInfo } = {
       },
     },
   },
+  // https://firebase.google.com/docs/reference/rules/rules.Number
   number: {
     about: 'A value of type Integer or type Float',
   },
+  // https://firebase.google.com/docs/reference/rules/rules.Path
   path: {
     about: 'Directory-like pattern for the location of a resource.',
     methods: {
@@ -487,6 +498,7 @@ const basicTypes: { [key: string]: TypeInfo } = {
       },
     },
   },
+  // https://firebase.google.com/docs/reference/rules/rules.firestore.Request
   request: {
     about: 'The incoming request context.',
     fields: {
@@ -584,6 +596,7 @@ const basicTypes: { [key: string]: TypeInfo } = {
       },
     },
   },
+  // https://firebase.google.com/docs/reference/rules/rules.firestore.Resource
   resource: {
     about: 'The firestore document being read or written.',
     fields: {
@@ -601,6 +614,7 @@ const basicTypes: { [key: string]: TypeInfo } = {
       },
     },
   },
+  // https://firebase.google.com/docs/reference/rules/rules.Set
   set: {
     about:
       'Set type.\n\nA set is an unordered collection. A set cannot contain duplicate items.',
@@ -647,6 +661,7 @@ const basicTypes: { [key: string]: TypeInfo } = {
       },
     },
   },
+  // https://firebase.google.com/docs/reference/rules/rules.String
   string: {
     about:
       'Primitive type representing a string value.\n\nStrings can be lexicographically compared using the ==, !=, >, <, >= and <= operators.',
@@ -697,6 +712,7 @@ const basicTypes: { [key: string]: TypeInfo } = {
       },
     },
   },
+  // https://firebase.google.com/docs/reference/rules/rules.Timestamp
   timestamp: {
     about: 'A timestamp in UTC with nanosecond accuracy.',
     methods: {

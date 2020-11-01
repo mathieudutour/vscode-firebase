@@ -35,7 +35,7 @@ test('applies basic type members to implementations', async () => {
 })
 
 test('generates snippets for parameterized methods', async () => {
-  const info = await findType('request.path')
+  const info = await findType('request.method')
 
   assert.ok(info !== null)
   assert.ok(info.methods)
