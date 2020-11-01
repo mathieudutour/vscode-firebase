@@ -391,7 +391,7 @@ const basicTypes: { [key: string]: TypeInfo } = {
       },
       join: {
         about: 'Join the elements in the list into a string, with a separator.',
-        parameters: ['string'],
+        parameters: ['separator'],
         returns: 'string',
       },
       removeAll: {
@@ -426,7 +426,7 @@ const basicTypes: { [key: string]: TypeInfo } = {
       get: {
         about:
           'Returns the value associated with a given search key string.\n\nFor nested Maps, involving keys and sub-keys, returns the value associated with a given sub-key string. The sub-key is identified using a list, the first item of which is a top-level key and the last item the sub-key whose value is to be looked up and returned. See the nested Map example below.\n\nThe function requires a default value to return if no match to the given search key is found.',
-        parameters: ['string or list', 'default_value'],
+        parameters: ['string_or_list', 'default_value'],
         returns: 'value',
       },
       keys: {
@@ -674,13 +674,13 @@ const basicTypes: { [key: string]: TypeInfo } = {
       matches: {
         about:
           'Performs a regular expression match on the whole string. The regular expression uses Google RE2 syntax.',
-        parameters: ['string'],
+        parameters: ['regex'],
         returns: 'boolean',
       },
       replace: {
         about:
           'Replaces all occurrences of substrings matching a regular expression with a user-supplied string. The regular expression uses Google RE2 syntax.',
-        parameters: ['string', 'string'],
+        parameters: ['regex', 'sub'],
         returns: 'string',
       },
       size: {
@@ -692,7 +692,7 @@ const basicTypes: { [key: string]: TypeInfo } = {
         about:
           'Splits a string according to a regular expression. The regular expression uses Google RE2 syntax.',
         returns: 'list',
-        parameters: ['string'],
+        parameters: ['regex'],
       },
       toUtf8: {
         about: 'Returns the UTF-8 byte encoding of a string.',
@@ -854,12 +854,12 @@ const grammar: { [key: string]: TypeInfo } = {
       time: {
         about:
           'Create a duration from hours, minutes, seconds, and nanoseconds.',
-        parameters: ['integer', 'integer', 'integer', 'integer'],
+        parameters: ['hours', 'mins', 'secs', 'nanos'],
         returns: 'duration',
       },
       value: {
         about: 'Create a duration from a numeric magnitude and string unit.',
-        parameters: ['integer', 'string'],
+        parameters: ['magnitude', 'unit'],
         returns: 'duration',
       },
     },
@@ -871,22 +871,22 @@ const grammar: { [key: string]: TypeInfo } = {
     methods: {
       crc32: {
         about: 'Compute a hash using the CRC32 algorithm.',
-        parameters: ['bytes or string'],
+        parameters: ['bytes_or_string'],
         returns: 'bytes',
       },
       crc32c: {
         about: 'Compute a hash using the CRC32C algorithm.',
-        parameters: ['bytes or string'],
+        parameters: ['bytes_or_string'],
         returns: 'bytes',
       },
       md5: {
         about: 'Compute a hash using the MD5 algorithm.',
-        parameters: ['bytes or string'],
+        parameters: ['bytes_or_string'],
         returns: 'bytes',
       },
       sha256: {
         about: 'Compute a hash using the SHA256 algorithm.',
-        parameters: ['bytes or string'],
+        parameters: ['bytes_or_string'],
         returns: 'bytes',
       },
     },
@@ -898,7 +898,7 @@ const grammar: { [key: string]: TypeInfo } = {
     methods: {
       value: {
         about: 'Create a LatLng from floating point coordinates.',
-        parameters: ['float', 'float'],
+        parameters: ['lat', 'lng'],
         returns: 'latlng',
       },
     },
@@ -936,7 +936,7 @@ const grammar: { [key: string]: TypeInfo } = {
       pow: {
         about:
           'Return the value of the first argument raised to the power of the second argument.',
-        parameters: ['number', 'number'],
+        parameters: ['base', 'exponent'],
         returns: 'float',
       },
       round: {
@@ -958,12 +958,12 @@ const grammar: { [key: string]: TypeInfo } = {
     methods: {
       date: {
         about: 'Make a timestamp from a year, month, and day.',
-        parameters: ['integer', 'integer', 'integer'],
+        parameters: ['year', 'month', 'day'],
         returns: 'timestamp',
       },
       value: {
         about: 'Make a timestamp from an epoch time in milliseconds.',
-        parameters: ['integer'],
+        parameters: ['epochMillis'],
         returns: 'timestamp',
       },
     },

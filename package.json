@@ -3,7 +3,7 @@
   "displayName": "Firebase",
   "publisher": "me-dutour-mathieu",
   "description": "Firestore Security Rules syntaxt highlighting and linting",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/mathieudutour/vscode-firebase.git"
@@ -56,7 +56,7 @@
       {
         "language": "firerules",
         "scopeName": "source.firerules",
-        "path": "./syntaxes/firerules.json"
+        "path": "./syntaxes/firestore.tmLanguage.json"
       }
     ],
     "jsonValidation": [

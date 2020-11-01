@@ -1,0 +1,2063 @@
+{
+  "name": "Firestore rules",
+  "scopeName": "source.firerules",
+  "patterns": [
+    {
+      "include": "#shebang"
+    },
+    {
+      "include": "#firestore-root"
+    },
+    {
+      "include": "#statements"
+    }
+  ],
+  "repository": {
+    "shebang": {
+      "name": "comment.line.shebang.firerules",
+      "match": "rules_version?\\s*=?\\s*'\\d'?\\s*;"
+    },
+    "firestore-root": {
+      "name": "meta.root.firerules",
+      "begin": "(service)\\s+(cloud|firebase)\\.(firestore|storage)\\s*{",
+      "beginCaptures": {
+        "1": {
+          "name": "support.function.fs"
+        },
+        "2": {
+          "name": "keyword.control.fs"
+        },
+        "3": {
+          "name": "storage.type.class.fs"
+        }
+      },
+      "end": "\\}",
+      "patterns": [
+        {
+          "include": "#matcher"
+        },
+        {
+          "include": "#function-declaration"
+        },
+        {
+          "include": "#comment"
+        }
+      ]
+    },
+    "matcher": {
+      "name": "meta.matcher.fs",
+      "begin": "match",
+      "beginCaptures": {
+        "0": {
+          "name": "storage.modifier.fs"
+        }
+      },
+      "end": "\\}",
+      "patterns": [
+        {
+          "include": "#matcher"
+        },
+        {
+          "include": "#matcher-path"
+        },
+        {
+          "include": "#function-declaration"
+        },
+        {
+          "include": "#allow-statement"
+        },
+        {
+          "include": "#comment"
+        }
+      ]
+    },
+    "allow-statement": {
+      "name": "meta.allow.fs",
+      "begin": "(allow)",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.other.fs"
+        }
+      },
+      "end": "\\;|(?=allow)|(?=match)|(?=\\})",
+      "patterns": [
+        {
+          "include": "#allow-head"
+        },
+        {
+          "include": "#allow-body"
+        },
+        {
+          "include": "#comment"
+        }
+      ]
+    },
+    "allow-body": {
+      "name": "meta.allow.body.fs",
+      "begin": "\\:",
+      "end": "(?=\\;)|(?=allow)|(?=match)|(?=\\})",
+      "patterns": [
+        {
+          "include": "#allow-if-statement"
+        }
+      ]
+    },
+    "allow-if-statement": {
+      "name": "meta.allow.body.if.fs",
+      "begin": "(if)",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.control.fs"
+        }
+      },
+      "end": "(?=\\;)|(?=allow)|(?=match)|(?=\\})",
+      "patterns": [
+        {
+          "include": "#expression"
+        }
+      ]
+    },
+    "allow-head": {
+      "name": "meta.allow.head.fs",
+      "begin": "(?<=allow)",
+      "end": "(?=\\:)|(?=\\/\\/)|(?=\\;)|(?=allow)|(?=match)",
+      "patterns": [
+        {
+          "include": "#allow-scope"
+        }
+      ]
+    },
+    "allow-scope": {
+      "name": "meta.allow.scope.fs",
+      "match": "\\s+((write|read|get|list|update|delete|create)(\\s*,\\s*(write|read|get|list|update|delete|create))*)\\s*",
+      "captures": {
+        "1": {
+          "name": "support.type.builtin.fs"
+        },
+        "2": {
+          "name": "support.type.builtin.fs"
+        }
+      }
+    },
+    "matcher-path": {
+      "name": "string.unquoted.fs",
+      "begin": "(?<=match) \\/",
+      "end": " ",
+      "patterns": [
+        {
+          "include": "#matcher-param"
+        }
+      ]
+    },
+    "matcher-param": {
+      "name": "variable.parameter.fs",
+      "begin": "\\{\\w+",
+      "end": "\\}"
+    },
+    "statements": {
+      "patterns": [
+        {
+          "include": "#declaration"
+        },
+        {
+          "include": "#control-statement"
+        },
+        {
+          "include": "#after-operator-block-as-object-literal"
+        },
+        {
+          "include": "#decl-block"
+        },
+        {
+          "include": "#expression"
+        },
+        {
+          "include": "#punctuation-semicolon"
+        },
+        {
+          "include": "#string"
+        },
+        {
+          "include": "#comment"
+        }
+      ]
+    },
+    "declaration": {
+      "patterns": [
+        {
+          "include": "#var-expr"
+        },
+        {
+          "include": "#function-declaration"
+        }
+      ]
+    },
+    "control-statement": {
+      "patterns": [
+        {
+          "name": "keyword.control.flow.firerules",
+          "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(return)(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))"
+        },
+        {
+          "include": "#if-statement"
+        },
+        {
+          "name": "keyword.control.conditional.firerules",
+          "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(else|if)(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))"
+        }
+      ]
+    },
+    "expression": {
+      "patterns": [
+        {
+          "include": "#expressionWithoutIdentifiers"
+        },
+        {
+          "include": "#identifiers"
+        },
+        {
+          "include": "#expressionPunctuations"
+        }
+      ]
+    },
+    "expressionWithoutIdentifiers": {
+      "patterns": [
+        {
+          "include": "#string"
+        },
+        {
+          "include": "#comment"
+        },
+        {
+          "include": "#function-expression"
+        },
+        {
+          "include": "#ternary-expression"
+        },
+        {
+          "include": "#is-expr"
+        },
+        {
+          "include": "#object-literal"
+        },
+        {
+          "include": "#expression-operators"
+        },
+        {
+          "include": "#function-call"
+        },
+        {
+          "include": "#literal"
+        },
+        {
+          "include": "#support-objects"
+        },
+        {
+          "include": "#paren-expression"
+        }
+      ]
+    },
+    "expressionPunctuations": {
+      "patterns": [
+        {
+          "include": "#punctuation-comma"
+        },
+        {
+          "include": "#punctuation-accessor"
+        }
+      ]
+    },
+    "var-expr": {
+      "patterns": [
+        {
+          "name": "meta.var.expr.firerules",
+          "begin": "(?=(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(?:(\\bexport)\\s+)?(?:(\\bdeclare)\\s+)?\\b(var|let)(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.)))",
+          "end": "(?!(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(?:(\\bexport)\\s+)?(?:(\\bdeclare)\\s+)?\\b(var|let)(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.)))((?=;|}|((?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(of|in)\\s+)|^\\s*$|;|(?:^\\s*(?:abstract|async|class|const|declare|enum|export|function|import|interface|let|module|namespace|return|type|var)\\b))|((?<!^let|[^\\._$[:alnum:]]let|^var|[^\\._$[:alnum:]]var)(?=\\s*$)))",
+          "patterns": [
+            {
+              "begin": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(?:(\\bexport)\\s+)?(?:(\\bdeclare)\\s+)?\\b(var|let)(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))\\s*",
+              "beginCaptures": {
+                "1": {
+                  "name": "keyword.control.export.firerules"
+                },
+                "2": {
+                  "name": "storage.modifier.firerules"
+                },
+                "3": {
+                  "name": "storage.type.firerules"
+                }
+              },
+              "end": "(?=\\S)"
+            },
+            {
+              "include": "#variable-initializer"
+            },
+            {
+              "include": "#comment"
+            },
+            {
+              "begin": "(,)\\s*((?!\\S)|(?=\\/\\/))",
+              "beginCaptures": {
+                "1": {
+                  "name": "punctuation.separator.comma.firerules"
+                }
+              },
+              "end": "(?<!,)(((?==|;|}|((?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(of|in)\\s+)|^\\s*$))|((?<=\\S)(?=\\s*$)))",
+              "patterns": [
+                {
+                  "include": "#single-line-comment-consuming-line-ending"
+                },
+                {
+                  "include": "#comment"
+                },
+                {
+                  "include": "#punctuation-comma"
+                }
+              ]
+            },
+            {
+              "include": "#punctuation-comma"
+            }
+          ]
+        }
+      ]
+    },
+    "binding-element": {
+      "patterns": [
+        {
+          "include": "#comment"
+        },
+        {
+          "include": "#string"
+        },
+        {
+          "include": "#numeric-literal"
+        },
+        {
+          "include": "#variable-initializer"
+        }
+      ]
+    },
+    "parameter-name": {
+      "patterns": [
+        {
+          "match": "(?x)(?:(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(public|private|protected|readonly)\\s+)?(?:(\\.\\.\\.)\\s*)?(?<!=|:)(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(?:(this)|([_$[:alpha:]][_$[:alnum:]]*))(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))\\s*(\\??)(?=\\s*\n# function assignment |\n(=\\s*(\n  ((async\\s+)?(\n    (function\\s*[(<*]) |\n    (function\\s+) |\n    ([_$[:alpha:]][_$[:alnum:]]*\\s*=>)\n  )) |\n  ((async\\s*)?(\n    ((<\\s*$)|([\\(]\\s*((([\\{\\[]\\s*)?$)|((\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})\\s*((:\\s*\\{?$)|((\\s*([^<>\\(\\)\\{\\}]|\\<([^<>]|\\<[^<>]+\\>)+\\>|\\([^\\(\\)]+\\)|\\{[^\\{\\}]+\\})+\\s*)?=\\s*)))|((\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\])\\s*((:\\s*\\[?$)|((\\s*([^<>\\(\\)\\{\\}]|\\<([^<>]|\\<[^<>]+\\>)+\\>|\\([^\\(\\)]+\\)|\\{[^\\{\\}]+\\})+\\s*)?=\\s*)))))) |\n    # sure shot arrow functions even if => is on new line\n(\n  (<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<]|\\<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<]|\\<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<])*\\>)*\\>)*>\\s*)?\n  [(]\\s*(\\/\\*([^\\*]|(\\*[^\\/]))*\\*\\/\\s*)*\n  (\n    ([)]\\s*:) |                                                                                       # ():\n    ((\\.\\.\\.\\s*)?[_$[:alpha:]][_$[:alnum:]]*\\s*:)                                                                  # [(]param: | [(]...param:\n  )\n) |\n(\n  [<]\\s*[_$[:alpha:]][_$[:alnum:]]*\\s+extends\\s*[^=>]                                                              # < typeparam extends\n) |\n# arrow function possible to detect only with => on same line\n(\n  (<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<]|\\<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<]|\\<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<])*\\>)*\\>)*>\\s*)?                                                                                 # typeparameters\n  \\(\\s*(\\/\\*([^\\*]|(\\*[^\\/]))*\\*\\/\\s*)*(([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\])|(\\.\\.\\.\\s*[_$[:alpha:]]))([^()\\'\\\"\\`]|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\'([^\\'\\\\]|\\\\.)*\\')|(\\\"([^\\\"\\\\]|\\\\.)*\\\")|(\\`([^\\`\\\\]|\\\\.)*\\`))*)?\\)   # parameters\n  (\\s*:\\s*([^<>\\(\\)\\{\\}]|\\<([^<>]|\\<[^<>]+\\>)+\\>|\\([^\\(\\)]+\\)|\\{[^\\{\\}]+\\})+)?                                                                        # return type\n  \\s*=>                                                                                               # arrow operator\n)\n  ))\n)) |\n# typeannotation is fn type: < | () | (... | (param: | (param, | (param? | (param= | (param) =>\n(:\\s*(\n  (<) |\n  ([(]\\s*(\n    ([)]) |\n    (\\.\\.\\.) |\n    ([_$[:alnum:]]+\\s*(\n      ([:,?=])|\n      ([)]\\s*=>)\n    ))\n  ))\n)) |\n(:\\s*(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))Function(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))) |\n(:\\s*((<\\s*$)|([\\(]\\s*((([\\{\\[]\\s*)?$)|((\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})\\s*((:\\s*\\{?$)|((\\s*([^<>\\(\\)\\{\\}]|\\<([^<>]|\\<[^<>]+\\>)+\\>|\\([^\\(\\)]+\\)|\\{[^\\{\\}]+\\})+\\s*)?=\\s*)))|((\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\])\\s*((:\\s*\\[?$)|((\\s*([^<>\\(\\)\\{\\}]|\\<([^<>]|\\<[^<>]+\\>)+\\>|\\([^\\(\\)]+\\)|\\{[^\\{\\}]+\\})+\\s*)?=\\s*))))))) |\n(:\\s*(=>|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(<[^<>]*>)|[^<>(),=])+=\\s*(\n  ((async\\s+)?(\n    (function\\s*[(<*]) |\n    (function\\s+) |\n    ([_$[:alpha:]][_$[:alnum:]]*\\s*=>)\n  )) |\n  ((async\\s*)?(\n    ((<\\s*$)|([\\(]\\s*((([\\{\\[]\\s*)?$)|((\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})\\s*((:\\s*\\{?$)|((\\s*([^<>\\(\\)\\{\\}]|\\<([^<>]|\\<[^<>]+\\>)+\\>|\\([^\\(\\)]+\\)|\\{[^\\{\\}]+\\})+\\s*)?=\\s*)))|((\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\])\\s*((:\\s*\\[?$)|((\\s*([^<>\\(\\)\\{\\}]|\\<([^<>]|\\<[^<>]+\\>)+\\>|\\([^\\(\\)]+\\)|\\{[^\\{\\}]+\\})+\\s*)?=\\s*)))))) |\n    # sure shot arrow functions even if => is on new line\n(\n  (<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<]|\\<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<]|\\<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<])*\\>)*\\>)*>\\s*)?\n  [(]\\s*(\\/\\*([^\\*]|(\\*[^\\/]))*\\*\\/\\s*)*\n  (\n    ([)]\\s*:) |                                                                                       # ():\n    ((\\.\\.\\.\\s*)?[_$[:alpha:]][_$[:alnum:]]*\\s*:)                                                                  # [(]param: | [(]...param:\n  )\n) |\n(\n  [<]\\s*[_$[:alpha:]][_$[:alnum:]]*\\s+extends\\s*[^=>]                                                              # < typeparam extends\n) |\n# arrow function possible to detect only with => on same line\n(\n  (<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<]|\\<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<]|\\<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<])*\\>)*\\>)*>\\s*)?                                                                                 # typeparameters\n  \\(\\s*(\\/\\*([^\\*]|(\\*[^\\/]))*\\*\\/\\s*)*(([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\])|(\\.\\.\\.\\s*[_$[:alpha:]]))([^()\\'\\\"\\`]|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\'([^\\'\\\\]|\\\\.)*\\')|(\\\"([^\\\"\\\\]|\\\\.)*\\\")|(\\`([^\\`\\\\]|\\\\.)*\\`))*)?\\)   # parameters\n  (\\s*:\\s*([^<>\\(\\)\\{\\}]|\\<([^<>]|\\<[^<>]+\\>)+\\>|\\([^\\(\\)]+\\)|\\{[^\\{\\}]+\\})+)?                                                                        # return type\n  \\s*=>                                                                                               # arrow operator\n)\n  ))\n)))",
+          "captures": {
+            "1": {
+              "name": "storage.modifier.firerules"
+            },
+            "2": {
+              "name": "keyword.operator.rest.firerules"
+            },
+            "3": {
+              "name": "entity.name.function.firerules variable.language.this.firerules"
+            },
+            "4": {
+              "name": "entity.name.function.firerules"
+            },
+            "5": {
+              "name": "keyword.operator.optional.firerules"
+            }
+          }
+        },
+        {
+          "match": "(?x)(?:(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(public|private|protected|readonly)\\s+)?(?:(\\.\\.\\.)\\s*)?(?<!=|:)(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(?:(this)|([_$[:alpha:]][_$[:alnum:]]*))(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))\\s*(\\??)",
+          "captures": {
+            "1": {
+              "name": "storage.modifier.firerules"
+            },
+            "2": {
+              "name": "keyword.operator.rest.firerules"
+            },
+            "3": {
+              "name": "variable.parameter.firerules variable.language.this.firerules"
+            },
+            "4": {
+              "name": "variable.parameter.firerules"
+            },
+            "5": {
+              "name": "keyword.operator.optional.firerules"
+            }
+          }
+        }
+      ]
+    },
+    "parameter-binding-element": {
+      "patterns": [
+        {
+          "include": "#comment"
+        },
+        {
+          "include": "#string"
+        },
+        {
+          "include": "#numeric-literal"
+        },
+        {
+          "include": "#variable-initializer"
+        }
+      ]
+    },
+    "field-declaration": {
+      "name": "meta.field.declaration.firerules",
+      "begin": "(?x)(?<!\\()(?:(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(readonly)\\s+)?(?=\\s*((\\b(?<!\\$)0(?:x|X)[0-9a-fA-F][0-9a-fA-F_]*(n)?\\b(?!\\$))|(\\b(?<!\\$)0(?:b|B)[01][01_]*(n)?\\b(?!\\$))|(\\b(?<!\\$)0(?:o|O)?[0-7][0-7_]*(n)?\\b(?!\\$))|((?<!\\$)(?:\n  (?:\\b[0-9][0-9_]*(\\.)[0-9][0-9_]*[eE][+-]?[0-9][0-9_]*(n)?\\b)| # 1.1E+3\n  (?:\\b[0-9][0-9_]*(\\.)[eE][+-]?[0-9][0-9_]*(n)?\\b)|             # 1.E+3\n  (?:\\B(\\.)[0-9][0-9_]*[eE][+-]?[0-9][0-9_]*(n)?\\b)|             # .1E+3\n  (?:\\b[0-9][0-9_]*[eE][+-]?[0-9][0-9_]*(n)?\\b)|                 # 1E+3\n  (?:\\b[0-9][0-9_]*(\\.)[0-9][0-9_]*(n)?\\b)|                      # 1.1\n  (?:\\b[0-9][0-9_]*(\\.)(n)?\\B)|                                  # 1.\n  (?:\\B(\\.)[0-9][0-9_]*(n)?\\b)|                                  # .1\n  (?:\\b[0-9][0-9_]*(n)?\\b(?!\\.))                                 # 1\n)(?!\\$))|(\\#?[_$[:alpha:]][_$[:alnum:]]*)|(\\'([^\\'\\\\]|\\\\.)*\\')|(\\\"([^\\\"\\\\]|\\\\.)*\\\")|(\\`([^\\`\\\\]|\\\\.)*\\`)|(\\[([^\\[\\]]|\\[[^\\[\\]]*\\])+\\]))\\s*(?:(?:(\\?)|(\\!))\\s*)?(=|:|;|,|\\}|$))",
+      "beginCaptures": {
+        "1": {
+          "name": "storage.modifier.firerules"
+        }
+      },
+      "end": "(?x)(?=\\}|;|,|$|(^(?!\\s*((\\b(?<!\\$)0(?:x|X)[0-9a-fA-F][0-9a-fA-F_]*(n)?\\b(?!\\$))|(\\b(?<!\\$)0(?:b|B)[01][01_]*(n)?\\b(?!\\$))|(\\b(?<!\\$)0(?:o|O)?[0-7][0-7_]*(n)?\\b(?!\\$))|((?<!\\$)(?:\n  (?:\\b[0-9][0-9_]*(\\.)[0-9][0-9_]*[eE][+-]?[0-9][0-9_]*(n)?\\b)| # 1.1E+3\n  (?:\\b[0-9][0-9_]*(\\.)[eE][+-]?[0-9][0-9_]*(n)?\\b)|             # 1.E+3\n  (?:\\B(\\.)[0-9][0-9_]*[eE][+-]?[0-9][0-9_]*(n)?\\b)|             # .1E+3\n  (?:\\b[0-9][0-9_]*[eE][+-]?[0-9][0-9_]*(n)?\\b)|                 # 1E+3\n  (?:\\b[0-9][0-9_]*(\\.)[0-9][0-9_]*(n)?\\b)|                      # 1.1\n  (?:\\b[0-9][0-9_]*(\\.)(n)?\\B)|                                  # 1.\n  (?:\\B(\\.)[0-9][0-9_]*(n)?\\b)|                                  # .1\n  (?:\\b[0-9][0-9_]*(n)?\\b(?!\\.))                                 # 1\n)(?!\\$))|(\\#?[_$[:alpha:]][_$[:alnum:]]*)|(\\'([^\\'\\\\]|\\\\.)*\\')|(\\\"([^\\\"\\\\]|\\\\.)*\\\")|(\\`([^\\`\\\\]|\\\\.)*\\`)|(\\[([^\\[\\]]|\\[[^\\[\\]]*\\])+\\]))\\s*(?:(?:(\\?)|(\\!))\\s*)?(=|:|;|,|$))))|(?<=\\})",
+      "patterns": [
+        {
+          "include": "#variable-initializer"
+        },
+        {
+          "include": "#string"
+        },
+        {
+          "include": "#array-literal"
+        },
+        {
+          "include": "#numeric-literal"
+        },
+        {
+          "include": "#comment"
+        },
+        {
+          "match": "(?x)(\\#?[_$[:alpha:]][_$[:alnum:]]*)(?:(\\?)|(\\!))?(?=\\s*\\s*\n# function assignment |\n(=\\s*(\n  ((async\\s+)?(\n    (function\\s*[(<*]) |\n    (function\\s+) |\n    ([_$[:alpha:]][_$[:alnum:]]*\\s*=>)\n  )) |\n  ((async\\s*)?(\n    ((<\\s*$)|([\\(]\\s*((([\\{\\[]\\s*)?$)|((\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})\\s*((:\\s*\\{?$)|((\\s*([^<>\\(\\)\\{\\}]|\\<([^<>]|\\<[^<>]+\\>)+\\>|\\([^\\(\\)]+\\)|\\{[^\\{\\}]+\\})+\\s*)?=\\s*)))|((\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\])\\s*((:\\s*\\[?$)|((\\s*([^<>\\(\\)\\{\\}]|\\<([^<>]|\\<[^<>]+\\>)+\\>|\\([^\\(\\)]+\\)|\\{[^\\{\\}]+\\})+\\s*)?=\\s*)))))) |\n    # sure shot arrow functions even if => is on new line\n(\n  (<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<]|\\<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<]|\\<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<])*\\>)*\\>)*>\\s*)?\n  [(]\\s*(\\/\\*([^\\*]|(\\*[^\\/]))*\\*\\/\\s*)*\n  (\n    ([)]\\s*:) |                                                                                       # ():\n    ((\\.\\.\\.\\s*)?[_$[:alpha:]][_$[:alnum:]]*\\s*:)                                                                  # [(]param: | [(]...param:\n  )\n) |\n(\n  [<]\\s*[_$[:alpha:]][_$[:alnum:]]*\\s+extends\\s*[^=>]                                                              # < typeparam extends\n) |\n# arrow function possible to detect only with => on same line\n(\n  (<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<]|\\<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<]|\\<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<])*\\>)*\\>)*>\\s*)?                                                                                 # typeparameters\n  \\(\\s*(\\/\\*([^\\*]|(\\*[^\\/]))*\\*\\/\\s*)*(([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\])|(\\.\\.\\.\\s*[_$[:alpha:]]))([^()\\'\\\"\\`]|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\'([^\\'\\\\]|\\\\.)*\\')|(\\\"([^\\\"\\\\]|\\\\.)*\\\")|(\\`([^\\`\\\\]|\\\\.)*\\`))*)?\\)   # parameters\n  (\\s*:\\s*([^<>\\(\\)\\{\\}]|\\<([^<>]|\\<[^<>]+\\>)+\\>|\\([^\\(\\)]+\\)|\\{[^\\{\\}]+\\})+)?                                                                        # return type\n  \\s*=>                                                                                               # arrow operator\n)\n  ))\n)) |\n# typeannotation is fn type: < | () | (... | (param: | (param, | (param? | (param= | (param) =>\n(:\\s*(\n  (<) |\n  ([(]\\s*(\n    ([)]) |\n    (\\.\\.\\.) |\n    ([_$[:alnum:]]+\\s*(\n      ([:,?=])|\n      ([)]\\s*=>)\n    ))\n  ))\n)) |\n(:\\s*(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))Function(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))) |\n(:\\s*((<\\s*$)|([\\(]\\s*((([\\{\\[]\\s*)?$)|((\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})\\s*((:\\s*\\{?$)|((\\s*([^<>\\(\\)\\{\\}]|\\<([^<>]|\\<[^<>]+\\>)+\\>|\\([^\\(\\)]+\\)|\\{[^\\{\\}]+\\})+\\s*)?=\\s*)))|((\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\])\\s*((:\\s*\\[?$)|((\\s*([^<>\\(\\)\\{\\}]|\\<([^<>]|\\<[^<>]+\\>)+\\>|\\([^\\(\\)]+\\)|\\{[^\\{\\}]+\\})+\\s*)?=\\s*))))))) |\n(:\\s*(=>|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(<[^<>]*>)|[^<>(),=])+=\\s*(\n  ((async\\s+)?(\n    (function\\s*[(<*]) |\n    (function\\s+) |\n    ([_$[:alpha:]][_$[:alnum:]]*\\s*=>)\n  )) |\n  ((async\\s*)?(\n    ((<\\s*$)|([\\(]\\s*((([\\{\\[]\\s*)?$)|((\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})\\s*((:\\s*\\{?$)|((\\s*([^<>\\(\\)\\{\\}]|\\<([^<>]|\\<[^<>]+\\>)+\\>|\\([^\\(\\)]+\\)|\\{[^\\{\\}]+\\})+\\s*)?=\\s*)))|((\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\])\\s*((:\\s*\\[?$)|((\\s*([^<>\\(\\)\\{\\}]|\\<([^<>]|\\<[^<>]+\\>)+\\>|\\([^\\(\\)]+\\)|\\{[^\\{\\}]+\\})+\\s*)?=\\s*)))))) |\n    # sure shot arrow functions even if => is on new line\n(\n  (<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<]|\\<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<]|\\<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<])*\\>)*\\>)*>\\s*)?\n  [(]\\s*(\\/\\*([^\\*]|(\\*[^\\/]))*\\*\\/\\s*)*\n  (\n    ([)]\\s*:) |                                                                                       # ():\n    ((\\.\\.\\.\\s*)?[_$[:alpha:]][_$[:alnum:]]*\\s*:)                                                                  # [(]param: | [(]...param:\n  )\n) |\n(\n  [<]\\s*[_$[:alpha:]][_$[:alnum:]]*\\s+extends\\s*[^=>]                                                              # < typeparam extends\n) |\n# arrow function possible to detect only with => on same line\n(\n  (<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<]|\\<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<]|\\<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<])*\\>)*\\>)*>\\s*)?                                                                                 # typeparameters\n  \\(\\s*(\\/\\*([^\\*]|(\\*[^\\/]))*\\*\\/\\s*)*(([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\])|(\\.\\.\\.\\s*[_$[:alpha:]]))([^()\\'\\\"\\`]|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\'([^\\'\\\\]|\\\\.)*\\')|(\\\"([^\\\"\\\\]|\\\\.)*\\\")|(\\`([^\\`\\\\]|\\\\.)*\\`))*)?\\)   # parameters\n  (\\s*:\\s*([^<>\\(\\)\\{\\}]|\\<([^<>]|\\<[^<>]+\\>)+\\>|\\([^\\(\\)]+\\)|\\{[^\\{\\}]+\\})+)?                                                                        # return type\n  \\s*=>                                                                                               # arrow operator\n)\n  ))\n)))",
+          "captures": {
+            "1": {
+              "name": "meta.definition.property.firerules entity.name.function.firerules"
+            },
+            "2": {
+              "name": "keyword.operator.optional.firerules"
+            },
+            "3": {
+              "name": "keyword.operator.definiteassignment.firerules"
+            }
+          }
+        },
+        {
+          "name": "meta.definition.property.firerules variable.object.property.firerules",
+          "match": "\\#?[_$[:alpha:]][_$[:alnum:]]*"
+        }
+      ]
+    },
+    "variable-initializer": {
+      "patterns": [
+        {
+          "begin": "(?<!=|!)(=)(?!=)(?=\\s*\\S)(?!\\s*.*=>\\s*$)",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.operator.assignment.firerules"
+            }
+          },
+          "end": "(?=$|^|[,);}\\]]|((?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(of|in)\\s+))",
+          "patterns": [
+            {
+              "include": "#expression"
+            }
+          ]
+        },
+        {
+          "begin": "(?<!=|!)(=)(?!=)",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.operator.assignment.firerules"
+            }
+          },
+          "end": "(?=[,);}\\]]|((?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(of|in)\\s+))|(?=^\\s*$)|(?<=\\S)(?<!=)(?=\\s*$)",
+          "patterns": [
+            {
+              "include": "#expression"
+            }
+          ]
+        }
+      ]
+    },
+    "function-declaration": {
+      "name": "meta.function.firerules",
+      "begin": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(?:(\\bexport)\\s+)?(?:(\\bdeclare)\\s+)?(?:(async)\\s+)?(function\\b)(?:\\s*(\\*))?(?:(?:\\s+|(?<=\\*))([_$[:alpha:]][_$[:alnum:]]*))?\\s*",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.control.export.firerules"
+        },
+        "2": {
+          "name": "storage.modifier.firerules"
+        },
+        "3": {
+          "name": "storage.modifier.async.firerules"
+        },
+        "4": {
+          "name": "storage.type.function.firerules"
+        },
+        "5": {
+          "name": "keyword.generator.asterisk.firerules"
+        },
+        "6": {
+          "name": "meta.definition.function.firerules entity.name.function.firerules"
+        }
+      },
+      "end": "(?=;|(?:^\\s*(?:abstract|async|class|const|declare|enum|export|function|import|interface|let|module|namespace|return|type|var)\\b))|(?<=\\})",
+      "patterns": [
+        {
+          "include": "#function-name"
+        },
+        {
+          "include": "#function-body"
+        }
+      ]
+    },
+    "function-expression": {
+      "name": "meta.function.expression.firerules",
+      "begin": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(?:(async)\\s+)?(function\\b)(?:\\s*(\\*))?(?:(?:\\s+|(?<=\\*))([_$[:alpha:]][_$[:alnum:]]*))?\\s*",
+      "beginCaptures": {
+        "1": {
+          "name": "storage.modifier.async.firerules"
+        },
+        "2": {
+          "name": "storage.type.function.firerules"
+        },
+        "3": {
+          "name": "keyword.generator.asterisk.firerules"
+        },
+        "4": {
+          "name": "meta.definition.function.firerules entity.name.function.firerules"
+        }
+      },
+      "end": "(?=;)|(?<=\\})",
+      "patterns": [
+        {
+          "include": "#function-name"
+        },
+        {
+          "include": "#single-line-comment-consuming-line-ending"
+        },
+        {
+          "include": "#function-body"
+        }
+      ]
+    },
+    "function-name": {
+      "name": "meta.definition.function.firerules entity.name.function.firerules",
+      "match": "[_$[:alpha:]][_$[:alnum:]]*"
+    },
+    "function-body": {
+      "patterns": [
+        {
+          "include": "#comment"
+        },
+        {
+          "include": "#function-parameters"
+        },
+        {
+          "include": "#decl-block"
+        }
+      ]
+    },
+    "function-parameters": {
+      "name": "meta.parameters.firerules",
+      "begin": "\\(",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.parameters.begin.firerules"
+        }
+      },
+      "end": "\\)",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.parameters.end.firerules"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#function-parameters-body"
+        }
+      ]
+    },
+    "function-parameters-body": {
+      "patterns": [
+        {
+          "include": "#comment"
+        },
+        {
+          "include": "#string"
+        },
+        {
+          "include": "#parameter-name"
+        },
+        {
+          "include": "#variable-initializer"
+        },
+        {
+          "name": "punctuation.separator.parameter.firerules",
+          "match": ","
+        }
+      ]
+    },
+    "if-statement": {
+      "patterns": [
+        {
+          "begin": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(?=\\bif\\s*(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))\\s*(?!\\{))",
+          "end": "(?=;|$|\\})",
+          "patterns": [
+            {
+              "include": "#comment"
+            },
+            {
+              "begin": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(if)\\s*(\\()",
+              "beginCaptures": {
+                "1": {
+                  "name": "keyword.control.conditional.firerules"
+                },
+                "2": {
+                  "name": "meta.brace.round.firerules"
+                }
+              },
+              "end": "\\)",
+              "endCaptures": {
+                "0": {
+                  "name": "meta.brace.round.firerules"
+                }
+              },
+              "patterns": [
+                {
+                  "include": "#expression"
+                }
+              ]
+            },
+            {
+              "include": "#statements"
+            }
+          ]
+        }
+      ]
+    },
+    "decl-block": {
+      "name": "meta.block.firerules",
+      "begin": "\\{",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.block.firerules"
+        }
+      },
+      "end": "\\}",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.block.firerules"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#statements"
+        }
+      ]
+    },
+    "after-operator-block-as-object-literal": {
+      "name": "meta.objectliteral.firerules",
+      "begin": "(?<!\\+\\+|--)(?<=[:=(,\\[?+!>]|^await|[^\\._$[:alnum:]]await|^return|[^\\._$[:alnum:]]return|^yield|[^\\._$[:alnum:]]yield|^throw|[^\\._$[:alnum:]]throw|^in|[^\\._$[:alnum:]]in|^of|[^\\._$[:alnum:]]of|^typeof|[^\\._$[:alnum:]]typeof|&&|\\|\\||\\*)\\s*(\\{)",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.block.firerules"
+        }
+      },
+      "end": "\\}",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.block.firerules"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#object-member"
+        }
+      ]
+    },
+    "object-literal": {
+      "name": "meta.objectliteral.firerules",
+      "begin": "\\{",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.block.firerules"
+        }
+      },
+      "end": "\\}",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.block.firerules"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#object-member"
+        }
+      ]
+    },
+    "object-member": {
+      "patterns": [
+        {
+          "include": "#comment"
+        },
+        {
+          "name": "meta.object.member.firerules meta.object-literal.key.firerules",
+          "begin": "(?=\\[)",
+          "end": "(?=:)|((?<=[\\]])(?=\\s*[\\(\\<]))",
+          "patterns": [
+            {
+              "include": "#comment"
+            },
+            {
+              "include": "#array-literal"
+            }
+          ]
+        },
+        {
+          "name": "meta.object.member.firerules meta.object-literal.key.firerules",
+          "begin": "(?=[\\'\\\"\\`])",
+          "end": "(?=:)|((?<=[\\'\\\"\\`])(?=((\\s*[\\(\\<,}])|(\\s+(as)\\s+))))",
+          "patterns": [
+            {
+              "include": "#comment"
+            },
+            {
+              "include": "#string"
+            }
+          ]
+        },
+        {
+          "name": "meta.object.member.firerules meta.object-literal.key.firerules",
+          "begin": "(?x)(?=(\\b(?<!\\$)0(?:x|X)[0-9a-fA-F][0-9a-fA-F_]*(n)?\\b(?!\\$))|(\\b(?<!\\$)0(?:b|B)[01][01_]*(n)?\\b(?!\\$))|(\\b(?<!\\$)0(?:o|O)?[0-7][0-7_]*(n)?\\b(?!\\$))|((?<!\\$)(?:\n  (?:\\b[0-9][0-9_]*(\\.)[0-9][0-9_]*[eE][+-]?[0-9][0-9_]*(n)?\\b)| # 1.1E+3\n  (?:\\b[0-9][0-9_]*(\\.)[eE][+-]?[0-9][0-9_]*(n)?\\b)|             # 1.E+3\n  (?:\\B(\\.)[0-9][0-9_]*[eE][+-]?[0-9][0-9_]*(n)?\\b)|             # .1E+3\n  (?:\\b[0-9][0-9_]*[eE][+-]?[0-9][0-9_]*(n)?\\b)|                 # 1E+3\n  (?:\\b[0-9][0-9_]*(\\.)[0-9][0-9_]*(n)?\\b)|                      # 1.1\n  (?:\\b[0-9][0-9_]*(\\.)(n)?\\B)|                                  # 1.\n  (?:\\B(\\.)[0-9][0-9_]*(n)?\\b)|                                  # .1\n  (?:\\b[0-9][0-9_]*(n)?\\b(?!\\.))                                 # 1\n)(?!\\$)))",
+          "end": "(?=:)|(?=\\s*([\\(\\<,}])|(\\s+as\\s+))",
+          "patterns": [
+            {
+              "include": "#comment"
+            },
+            {
+              "include": "#numeric-literal"
+            }
+          ]
+        },
+        {
+          "name": "meta.object.member.firerules",
+          "match": "(?![_$[:alpha:]])([[:digit:]]+)\\s*(?=(\\/\\*([^\\*]|(\\*[^\\/]))*\\*\\/\\s*)*:)",
+          "captures": {
+            "0": {
+              "name": "meta.object-literal.key.firerules"
+            },
+            "1": {
+              "name": "constant.numeric.decimal.firerules"
+            }
+          }
+        },
+        {
+          "name": "meta.object.member.firerules",
+          "match": "(?x)(?:([_$[:alpha:]][_$[:alnum:]]*)\\s*(?=(\\/\\*([^\\*]|(\\*[^\\/]))*\\*\\/\\s*)*:(\\s*\\/\\*([^\\*]|(\\*[^\\/]))*\\*\\/)*\\s*(\n  ((async\\s+)?(\n    (function\\s*[(<*]) |\n    (function\\s+) |\n    ([_$[:alpha:]][_$[:alnum:]]*\\s*=>)\n  )) |\n  ((async\\s*)?(\n    ((<\\s*$)|([\\(]\\s*((([\\{\\[]\\s*)?$)|((\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})\\s*((:\\s*\\{?$)|((\\s*([^<>\\(\\)\\{\\}]|\\<([^<>]|\\<[^<>]+\\>)+\\>|\\([^\\(\\)]+\\)|\\{[^\\{\\}]+\\})+\\s*)?=\\s*)))|((\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\])\\s*((:\\s*\\[?$)|((\\s*([^<>\\(\\)\\{\\}]|\\<([^<>]|\\<[^<>]+\\>)+\\>|\\([^\\(\\)]+\\)|\\{[^\\{\\}]+\\})+\\s*)?=\\s*)))))) |\n    # sure shot arrow functions even if => is on new line\n(\n  (<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<]|\\<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<]|\\<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<])*\\>)*\\>)*>\\s*)?\n  [(]\\s*(\\/\\*([^\\*]|(\\*[^\\/]))*\\*\\/\\s*)*\n  (\n    ([)]\\s*:) |                                                                                       # ():\n    ((\\.\\.\\.\\s*)?[_$[:alpha:]][_$[:alnum:]]*\\s*:)                                                                  # [(]param: | [(]...param:\n  )\n) |\n(\n  [<]\\s*[_$[:alpha:]][_$[:alnum:]]*\\s+extends\\s*[^=>]                                                              # < typeparam extends\n) |\n# arrow function possible to detect only with => on same line\n(\n  (<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<]|\\<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<]|\\<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<])*\\>)*\\>)*>\\s*)?                                                                                 # typeparameters\n  \\(\\s*(\\/\\*([^\\*]|(\\*[^\\/]))*\\*\\/\\s*)*(([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\])|(\\.\\.\\.\\s*[_$[:alpha:]]))([^()\\'\\\"\\`]|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\'([^\\'\\\\]|\\\\.)*\\')|(\\\"([^\\\"\\\\]|\\\\.)*\\\")|(\\`([^\\`\\\\]|\\\\.)*\\`))*)?\\)   # parameters\n  (\\s*:\\s*([^<>\\(\\)\\{\\}]|\\<([^<>]|\\<[^<>]+\\>)+\\>|\\([^\\(\\)]+\\)|\\{[^\\{\\}]+\\})+)?                                                                        # return type\n  \\s*=>                                                                                               # arrow operator\n)\n  ))\n)))",
+          "captures": {
+            "0": {
+              "name": "meta.object-literal.key.firerules"
+            },
+            "1": {
+              "name": "entity.name.function.firerules"
+            }
+          }
+        },
+        {
+          "name": "meta.object.member.firerules",
+          "match": "(?:[_$[:alpha:]][_$[:alnum:]]*)\\s*(?=(\\/\\*([^\\*]|(\\*[^\\/]))*\\*\\/\\s*)*:)",
+          "captures": {
+            "0": {
+              "name": "meta.object-literal.key.firerules"
+            }
+          }
+        },
+        {
+          "name": "meta.object.member.firerules",
+          "match": "([_$[:alpha:]][_$[:alnum:]]*)\\s*(?=,|\\}|$|\\/\\/|\\/\\*)",
+          "captures": {
+            "1": {
+              "name": "variable.other.readwrite.firerules"
+            }
+          }
+        },
+        {
+          "name": "meta.object.member.firerules",
+          "begin": "(?=[_$[:alpha:]][_$[:alnum:]]*\\s*=)",
+          "end": "(?=,|\\}|$|\\/\\/|\\/\\*)",
+          "patterns": [
+            {
+              "include": "#expression"
+            }
+          ]
+        },
+        {
+          "name": "meta.object.member.firerules",
+          "begin": ":",
+          "beginCaptures": {
+            "0": {
+              "name": "meta.object-literal.key.firerules punctuation.separator.key-value.firerules"
+            }
+          },
+          "end": "(?=,|\\})",
+          "patterns": [
+            {
+              "begin": "(?<=:)\\s*(async)?(?=\\s*(<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<]|\\<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<]|\\<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<])*\\>)*\\>)*>\\s*)\\(\\s*((([\\{\\[]\\s*)?$)|((\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})\\s*((:\\s*\\{?$)|((\\s*([^<>\\(\\)\\{\\}]|\\<([^<>]|\\<[^<>]+\\>)+\\>|\\([^\\(\\)]+\\)|\\{[^\\{\\}]+\\})+\\s*)?=\\s*)))|((\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\])\\s*((:\\s*\\[?$)|((\\s*([^<>\\(\\)\\{\\}]|\\<([^<>]|\\<[^<>]+\\>)+\\>|\\([^\\(\\)]+\\)|\\{[^\\{\\}]+\\})+\\s*)?=\\s*)))))",
+              "beginCaptures": {
+                "1": {
+                  "name": "storage.modifier.async.firerules"
+                }
+              },
+              "end": "(?<=\\))",
+              "patterns": [
+                {
+                  "begin": "\\(",
+                  "beginCaptures": {
+                    "0": {
+                      "name": "meta.brace.round.firerules"
+                    }
+                  },
+                  "end": "\\)",
+                  "endCaptures": {
+                    "0": {
+                      "name": "meta.brace.round.firerules"
+                    }
+                  },
+                  "patterns": [
+                    {
+                      "include": "#expression-inside-possibly-arrow-parens"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "begin": "(?<=:)\\s*(async)?\\s*(\\()(?=\\s*((([\\{\\[]\\s*)?$)|((\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})\\s*((:\\s*\\{?$)|((\\s*([^<>\\(\\)\\{\\}]|\\<([^<>]|\\<[^<>]+\\>)+\\>|\\([^\\(\\)]+\\)|\\{[^\\{\\}]+\\})+\\s*)?=\\s*)))|((\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\])\\s*((:\\s*\\[?$)|((\\s*([^<>\\(\\)\\{\\}]|\\<([^<>]|\\<[^<>]+\\>)+\\>|\\([^\\(\\)]+\\)|\\{[^\\{\\}]+\\})+\\s*)?=\\s*)))))",
+              "beginCaptures": {
+                "1": {
+                  "name": "storage.modifier.async.firerules"
+                },
+                "2": {
+                  "name": "meta.brace.round.firerules"
+                }
+              },
+              "end": "\\)",
+              "endCaptures": {
+                "0": {
+                  "name": "meta.brace.round.firerules"
+                }
+              },
+              "patterns": [
+                {
+                  "include": "#expression-inside-possibly-arrow-parens"
+                }
+              ]
+            },
+            {
+              "begin": "(?<=\\>)\\s*(\\()(?=\\s*((([\\{\\[]\\s*)?$)|((\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})\\s*((:\\s*\\{?$)|((\\s*([^<>\\(\\)\\{\\}]|\\<([^<>]|\\<[^<>]+\\>)+\\>|\\([^\\(\\)]+\\)|\\{[^\\{\\}]+\\})+\\s*)?=\\s*)))|((\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\])\\s*((:\\s*\\[?$)|((\\s*([^<>\\(\\)\\{\\}]|\\<([^<>]|\\<[^<>]+\\>)+\\>|\\([^\\(\\)]+\\)|\\{[^\\{\\}]+\\})+\\s*)?=\\s*)))))",
+              "beginCaptures": {
+                "1": {
+                  "name": "meta.brace.round.firerules"
+                }
+              },
+              "end": "\\)",
+              "endCaptures": {
+                "0": {
+                  "name": "meta.brace.round.firerules"
+                }
+              },
+              "patterns": [
+                {
+                  "include": "#expression-inside-possibly-arrow-parens"
+                }
+              ]
+            },
+            {
+              "include": "#expression"
+            }
+          ]
+        },
+        {
+          "include": "#punctuation-comma"
+        }
+      ]
+    },
+    "ternary-expression": {
+      "begin": "(?!\\?\\.\\s*[^[:digit:]])(\\?)(?!\\?)",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.operator.ternary.firerules"
+        }
+      },
+      "end": "\\s*(:)",
+      "endCaptures": {
+        "1": {
+          "name": "keyword.operator.ternary.firerules"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#expression"
+        }
+      ]
+    },
+    "function-call": {
+      "patterns": [
+        {
+          "begin": "(?=(((([_$[:alpha:]][_$[:alnum:]]*)(\\s*\\??\\.\\s*(\\#?[_$[:alpha:]][_$[:alnum:]]*))*)|(\\??\\.\\s*\\#?[_$[:alpha:]][_$[:alnum:]]*))|(?<=[\\)]))\\s*(?:(\\?\\.\\s*)|(\\!))?((<\\s*(((keyof|infer|awaited|typeof|readonly)\\s+)|(([_$[:alpha:]][_$[:alnum:]]*|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\])|(\\'([^\\'\\\\]|\\\\.)*\\')|(\\\"([^\\\"\\\\]|\\\\.)*\\\")|(\\`([^\\`\\\\]|\\\\.)*\\`))(?=\\s*([\\<\\>\\,\\.\\[]|=>|&(?!&)|\\|(?!\\|)))))([^<>\\(]|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(?<==)\\>|\\<\\s*(((keyof|infer|awaited|typeof|readonly)\\s+)|(([_$[:alpha:]][_$[:alnum:]]*|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\])|(\\'([^\\'\\\\]|\\\\.)*\\')|(\\\"([^\\\"\\\\]|\\\\.)*\\\")|(\\`([^\\`\\\\]|\\\\.)*\\`))(?=\\s*([\\<\\>\\,\\.\\[]|=>|&(?!&)|\\|(?!\\|)))))(([^<>\\(]|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(?<==)\\>|\\<\\s*(((keyof|infer|awaited|typeof|readonly)\\s+)|(([_$[:alpha:]][_$[:alnum:]]*|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\])|(\\'([^\\'\\\\]|\\\\.)*\\')|(\\\"([^\\\"\\\\]|\\\\.)*\\\")|(\\`([^\\`\\\\]|\\\\.)*\\`))(?=\\s*([\\<\\>\\,\\.\\[]|=>|&(?!&)|\\|(?!\\|)))))([^<>\\(]|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(?<==)\\>)*(?<!=)\\>))*(?<!=)\\>)*(?<!=)>\\s*)?\\())",
+          "end": "(?<=\\))(?!(((([_$[:alpha:]][_$[:alnum:]]*)(\\s*\\??\\.\\s*(\\#?[_$[:alpha:]][_$[:alnum:]]*))*)|(\\??\\.\\s*\\#?[_$[:alpha:]][_$[:alnum:]]*))|(?<=[\\)]))\\s*(?:(\\?\\.\\s*)|(\\!))?((<\\s*(((keyof|infer|awaited|typeof|readonly)\\s+)|(([_$[:alpha:]][_$[:alnum:]]*|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\])|(\\'([^\\'\\\\]|\\\\.)*\\')|(\\\"([^\\\"\\\\]|\\\\.)*\\\")|(\\`([^\\`\\\\]|\\\\.)*\\`))(?=\\s*([\\<\\>\\,\\.\\[]|=>|&(?!&)|\\|(?!\\|)))))([^<>\\(]|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(?<==)\\>|\\<\\s*(((keyof|infer|awaited|typeof|readonly)\\s+)|(([_$[:alpha:]][_$[:alnum:]]*|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\])|(\\'([^\\'\\\\]|\\\\.)*\\')|(\\\"([^\\\"\\\\]|\\\\.)*\\\")|(\\`([^\\`\\\\]|\\\\.)*\\`))(?=\\s*([\\<\\>\\,\\.\\[]|=>|&(?!&)|\\|(?!\\|)))))(([^<>\\(]|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(?<==)\\>|\\<\\s*(((keyof|infer|awaited|typeof|readonly)\\s+)|(([_$[:alpha:]][_$[:alnum:]]*|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\])|(\\'([^\\'\\\\]|\\\\.)*\\')|(\\\"([^\\\"\\\\]|\\\\.)*\\\")|(\\`([^\\`\\\\]|\\\\.)*\\`))(?=\\s*([\\<\\>\\,\\.\\[]|=>|&(?!&)|\\|(?!\\|)))))([^<>\\(]|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(?<==)\\>)*(?<!=)\\>))*(?<!=)\\>)*(?<!=)>\\s*)?\\())",
+          "patterns": [
+            {
+              "name": "meta.function-call.firerules",
+              "begin": "(?=(([_$[:alpha:]][_$[:alnum:]]*)(\\s*\\??\\.\\s*(\\#?[_$[:alpha:]][_$[:alnum:]]*))*)|(\\??\\.\\s*\\#?[_$[:alpha:]][_$[:alnum:]]*))",
+              "end": "(?=\\s*(?:(\\?\\.\\s*)|(\\!))?((<\\s*(((keyof|infer|awaited|typeof|readonly)\\s+)|(([_$[:alpha:]][_$[:alnum:]]*|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\])|(\\'([^\\'\\\\]|\\\\.)*\\')|(\\\"([^\\\"\\\\]|\\\\.)*\\\")|(\\`([^\\`\\\\]|\\\\.)*\\`))(?=\\s*([\\<\\>\\,\\.\\[]|=>|&(?!&)|\\|(?!\\|)))))([^<>\\(]|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(?<==)\\>|\\<\\s*(((keyof|infer|awaited|typeof|readonly)\\s+)|(([_$[:alpha:]][_$[:alnum:]]*|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\])|(\\'([^\\'\\\\]|\\\\.)*\\')|(\\\"([^\\\"\\\\]|\\\\.)*\\\")|(\\`([^\\`\\\\]|\\\\.)*\\`))(?=\\s*([\\<\\>\\,\\.\\[]|=>|&(?!&)|\\|(?!\\|)))))(([^<>\\(]|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(?<==)\\>|\\<\\s*(((keyof|infer|awaited|typeof|readonly)\\s+)|(([_$[:alpha:]][_$[:alnum:]]*|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\])|(\\'([^\\'\\\\]|\\\\.)*\\')|(\\\"([^\\\"\\\\]|\\\\.)*\\\")|(\\`([^\\`\\\\]|\\\\.)*\\`))(?=\\s*([\\<\\>\\,\\.\\[]|=>|&(?!&)|\\|(?!\\|)))))([^<>\\(]|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(?<==)\\>)*(?<!=)\\>))*(?<!=)\\>)*(?<!=)>\\s*)?\\())",
+              "patterns": [
+                {
+                  "include": "#function-call-target"
+                }
+              ]
+            },
+            {
+              "include": "#comment"
+            },
+            {
+              "include": "#paren-expression"
+            }
+          ]
+        },
+        {
+          "begin": "(?=(((([_$[:alpha:]][_$[:alnum:]]*)(\\s*\\??\\.\\s*(\\#?[_$[:alpha:]][_$[:alnum:]]*))*)|(\\??\\.\\s*\\#?[_$[:alpha:]][_$[:alnum:]]*))|(?<=[\\)]))(<\\s*[\\{\\[\\(]\\s*$))",
+          "end": "(?<=\\>)(?!(((([_$[:alpha:]][_$[:alnum:]]*)(\\s*\\??\\.\\s*(\\#?[_$[:alpha:]][_$[:alnum:]]*))*)|(\\??\\.\\s*\\#?[_$[:alpha:]][_$[:alnum:]]*))|(?<=[\\)]))(<\\s*[\\{\\[\\(]\\s*$))",
+          "patterns": [
+            {
+              "name": "meta.function-call.firerules",
+              "begin": "(?=(([_$[:alpha:]][_$[:alnum:]]*)(\\s*\\??\\.\\s*(\\#?[_$[:alpha:]][_$[:alnum:]]*))*)|(\\??\\.\\s*\\#?[_$[:alpha:]][_$[:alnum:]]*))",
+              "end": "(?=(<\\s*[\\{\\[\\(]\\s*$))",
+              "patterns": [
+                {
+                  "include": "#function-call-target"
+                }
+              ]
+            },
+            {
+              "include": "#comment"
+            }
+          ]
+        }
+      ]
+    },
+    "function-call-target": {
+      "patterns": [
+        {
+          "include": "#support-function-call-identifiers"
+        },
+        {
+          "name": "entity.name.function.firerules",
+          "match": "(\\#?[_$[:alpha:]][_$[:alnum:]]*)"
+        }
+      ]
+    },
+    "support-function-call-identifiers": {
+      "patterns": [
+        {
+          "include": "#literal"
+        },
+        {
+          "include": "#support-objects"
+        },
+        {
+          "include": "#object-identifiers"
+        },
+        {
+          "include": "#punctuation-accessor"
+        },
+        {
+          "name": "keyword.operator.expression.import.firerules",
+          "match": "(?:(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))import(?=\\s*[\\(]\\s*[\\\"\\'\\`]))"
+        }
+      ]
+    },
+    "is-expr": {
+      "begin": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(is)(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.operator.expression.is.firerules"
+        }
+      },
+      "end": "(?<=\\))|(?=[;),}\\]:?\\-\\+\\>]|\\|\\||\\&\\&|\\!\\=\\=|$|(([\\&\\~\\^\\|]\\s*)?[_$[:alpha:]][_$[:alnum:]]*\\s+is(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.)))|((?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))function((\\s+[_$[:alpha:]][_$[:alnum:]]*)|(\\s*[\\(]))))",
+      "patterns": [
+        {
+          "include": "#type"
+        }
+      ]
+    },
+    "paren-expression": {
+      "begin": "\\(",
+      "beginCaptures": {
+        "0": {
+          "name": "meta.brace.round.firerules"
+        }
+      },
+      "end": "\\)",
+      "endCaptures": {
+        "0": {
+          "name": "meta.brace.round.firerules"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#expression"
+        }
+      ]
+    },
+    "expression-operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.expression.is.firerules",
+          "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))is(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))(?!\\()"
+        },
+        {
+          "name": "keyword.operator.expression.as.firerules",
+          "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))as(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))(?!\\()"
+        },
+        {
+          "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(as)\\s+(const)(?=\\s*($|[;,:})\\]]))",
+          "captures": {
+            "1": {
+              "name": "keyword.control.as.firerules"
+            },
+            "2": {
+              "name": "storage.modifier.firerules"
+            }
+          }
+        },
+        {
+          "begin": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(as)\\s+",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.control.as.firerules"
+            }
+          },
+          "end": "(?=^|[;),}\\]:?\\-\\+\\>]|\\|\\||\\&\\&|\\!\\=\\=|$|((?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(as)\\s+)|(\\s+\\<))",
+          "patterns": [
+            {
+              "include": "#type"
+            }
+          ]
+        },
+        {
+          "name": "keyword.operator.comparison.firerules",
+          "match": "==|!="
+        },
+        {
+          "name": "keyword.operator.relational.firerules",
+          "match": "<=|>=|<|>"
+        },
+        {
+          "match": "(?<=[_$[:alnum:]])(\\!)\\s*(/)(?![/*])",
+          "captures": {
+            "1": {
+              "name": "keyword.operator.logical.firerules"
+            },
+            "2": {
+              "name": "keyword.operator.arithmetic.firerules"
+            }
+          }
+        },
+        {
+          "name": "keyword.operator.logical.firerules",
+          "match": "\\!|&&|\\|\\|"
+        },
+        {
+          "name": "keyword.operator.assignment.firerules",
+          "match": "\\="
+        },
+        {
+          "name": "keyword.operator.arithmetic.firerules",
+          "match": "%|\\*|/|-|\\+"
+        },
+        {
+          "begin": "(?<=[_$[:alnum:])\\]])\\s*(?=(\\/\\*([^\\*]|(\\*[^\\/]))*\\*\\/\\s*)+(/)(?![/*]))",
+          "end": "(/)(?!\\*([^\\*]|(\\*[^\\/]))*\\*\\/)",
+          "endCaptures": {
+            "1": {
+              "name": "keyword.operator.arithmetic.firerules"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#comment"
+            }
+          ]
+        },
+        {
+          "match": "(?<=[_$[:alnum:])\\]])\\s*(/)(?![/*])",
+          "captures": {
+            "1": {
+              "name": "keyword.operator.arithmetic.firerules"
+            }
+          }
+        }
+      ]
+    },
+    "literal": {
+      "patterns": [
+        {
+          "include": "#numeric-literal"
+        },
+        {
+          "include": "#boolean-literal"
+        },
+        {
+          "include": "#null-literal"
+        },
+        {
+          "include": "#array-literal"
+        }
+      ]
+    },
+    "array-literal": {
+      "name": "meta.array.literal.firerules",
+      "begin": "\\s*(\\[)",
+      "beginCaptures": {
+        "1": {
+          "name": "meta.brace.square.firerules"
+        }
+      },
+      "end": "\\]",
+      "endCaptures": {
+        "0": {
+          "name": "meta.brace.square.firerules"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#expression"
+        },
+        {
+          "include": "#punctuation-comma"
+        }
+      ]
+    },
+    "numeric-literal": {
+      "patterns": [
+        {
+          "name": "constant.numeric.hex.firerules",
+          "match": "\\b(?<!\\$)0(?:x|X)[0-9a-fA-F][0-9a-fA-F_]*(n)?\\b(?!\\$)",
+          "captures": {
+            "1": {
+              "name": "storage.type.numeric.bigint.firerules"
+            }
+          }
+        },
+        {
+          "name": "constant.numeric.binary.firerules",
+          "match": "\\b(?<!\\$)0(?:b|B)[01][01_]*(n)?\\b(?!\\$)",
+          "captures": {
+            "1": {
+              "name": "storage.type.numeric.bigint.firerules"
+            }
+          }
+        },
+        {
+          "name": "constant.numeric.octal.firerules",
+          "match": "\\b(?<!\\$)0(?:o|O)?[0-7][0-7_]*(n)?\\b(?!\\$)",
+          "captures": {
+            "1": {
+              "name": "storage.type.numeric.bigint.firerules"
+            }
+          }
+        },
+        {
+          "match": "(?x)\n(?<!\\$)(?:\n  (?:\\b[0-9][0-9_]*(\\.)[0-9][0-9_]*[eE][+-]?[0-9][0-9_]*(n)?\\b)| # 1.1E+3\n  (?:\\b[0-9][0-9_]*(\\.)[eE][+-]?[0-9][0-9_]*(n)?\\b)|             # 1.E+3\n  (?:\\B(\\.)[0-9][0-9_]*[eE][+-]?[0-9][0-9_]*(n)?\\b)|             # .1E+3\n  (?:\\b[0-9][0-9_]*[eE][+-]?[0-9][0-9_]*(n)?\\b)|                 # 1E+3\n  (?:\\b[0-9][0-9_]*(\\.)[0-9][0-9_]*(n)?\\b)|                      # 1.1\n  (?:\\b[0-9][0-9_]*(\\.)(n)?\\B)|                                  # 1.\n  (?:\\B(\\.)[0-9][0-9_]*(n)?\\b)|                                  # .1\n  (?:\\b[0-9][0-9_]*(n)?\\b(?!\\.))                                 # 1\n)(?!\\$)",
+          "captures": {
+            "0": {
+              "name": "constant.numeric.decimal.firerules"
+            },
+            "1": {
+              "name": "meta.delimiter.decimal.period.firerules"
+            },
+            "2": {
+              "name": "storage.type.numeric.bigint.firerules"
+            },
+            "3": {
+              "name": "meta.delimiter.decimal.period.firerules"
+            },
+            "4": {
+              "name": "storage.type.numeric.bigint.firerules"
+            },
+            "5": {
+              "name": "meta.delimiter.decimal.period.firerules"
+            },
+            "6": {
+              "name": "storage.type.numeric.bigint.firerules"
+            },
+            "7": {
+              "name": "storage.type.numeric.bigint.firerules"
+            },
+            "8": {
+              "name": "meta.delimiter.decimal.period.firerules"
+            },
+            "9": {
+              "name": "storage.type.numeric.bigint.firerules"
+            },
+            "10": {
+              "name": "meta.delimiter.decimal.period.firerules"
+            },
+            "11": {
+              "name": "storage.type.numeric.bigint.firerules"
+            },
+            "12": {
+              "name": "meta.delimiter.decimal.period.firerules"
+            },
+            "13": {
+              "name": "storage.type.numeric.bigint.firerules"
+            },
+            "14": {
+              "name": "storage.type.numeric.bigint.firerules"
+            }
+          }
+        }
+      ]
+    },
+    "boolean-literal": {
+      "patterns": [
+        {
+          "name": "constant.language.boolean.true.firerules",
+          "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))true(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))"
+        },
+        {
+          "name": "constant.language.boolean.false.firerules",
+          "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))false(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))"
+        }
+      ]
+    },
+    "null-literal": {
+      "name": "constant.language.null.firerules",
+      "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))null(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))"
+    },
+    "support-objects": {
+      "patterns": [
+        {
+          "name": "support.class.builtin.firerules",
+          "match": "(?x)(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(duration|hashing|latlng|math|timestamp)\\b(?!\\$)"
+        },
+        {
+          "name": "support.function.firerules",
+          "match": "(?x)(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(exists|existsAfter|get|getAfter|debug|bool|float|int|path|string)(?=\\s*\\()"
+        },
+        {
+          "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(duration)(?:\\s*(?:(\\.)|(\\?\\.(?!\\s*[[:digit:]])))\\s*(abs|time|value))?\\b(?!\\$)",
+          "captures": {
+            "1": {
+              "name": "support.constant.duration.firerules"
+            },
+            "2": {
+              "name": "punctuation.accessor.firerules"
+            },
+            "3": {
+              "name": "punctuation.accessor.optional.firerules"
+            },
+            "4": {
+              "name": "support.function.duration.firerules"
+            }
+          }
+        },
+        {
+          "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(hashing)(?:\\s*(?:(\\.)|(\\?\\.(?!\\s*[[:digit:]])))\\s*(crc32|crc32c|md5|sha256))?\\b(?!\\$)",
+          "captures": {
+            "1": {
+              "name": "support.constant.hashing.firerules"
+            },
+            "2": {
+              "name": "punctuation.accessor.firerules"
+            },
+            "3": {
+              "name": "punctuation.accessor.optional.firerules"
+            },
+            "4": {
+              "name": "support.function.hashing.firerules"
+            }
+          }
+        },
+        {
+          "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(latlng)(?:\\s*(?:(\\.)|(\\?\\.(?!\\s*[[:digit:]])))\\s*(value))?\\b(?!\\$)",
+          "captures": {
+            "1": {
+              "name": "support.constant.latlng.firerules"
+            },
+            "2": {
+              "name": "punctuation.accessor.firerules"
+            },
+            "3": {
+              "name": "punctuation.accessor.optional.firerules"
+            },
+            "4": {
+              "name": "support.function.latlng.firerules"
+            }
+          }
+        },
+        {
+          "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(math)(?:\\s*(?:(\\.)|(\\?\\.(?!\\s*[[:digit:]])))\\s*(abs|ceil|floor|isInfinite|isNaN|pow|round|sqrt))?\\b(?!\\$)",
+          "captures": {
+            "1": {
+              "name": "support.constant.math.firerules"
+            },
+            "2": {
+              "name": "punctuation.accessor.firerules"
+            },
+            "3": {
+              "name": "punctuation.accessor.optional.firerules"
+            },
+            "4": {
+              "name": "support.function.math.firerules"
+            }
+          }
+        },
+        {
+          "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(timestamp)(?:\\s*(?:(\\.)|(\\?\\.(?!\\s*[[:digit:]])))\\s*(date|value))?\\b(?!\\$)",
+          "captures": {
+            "1": {
+              "name": "support.constant.timestamp.firerules"
+            },
+            "2": {
+              "name": "punctuation.accessor.firerules"
+            },
+            "3": {
+              "name": "punctuation.accessor.optional.firerules"
+            },
+            "4": {
+              "name": "support.function.timestamp.firerules"
+            }
+          }
+        }
+      ]
+    },
+    "identifiers": {
+      "patterns": [
+        {
+          "include": "#object-identifiers"
+        },
+        {
+          "match": "(?x)(?:(?:(\\.)|(\\?\\.(?!\\s*[[:digit:]])))\\s*)?([_$[:alpha:]][_$[:alnum:]]*)(?=\\s*=\\s*(\n  ((async\\s+)?(\n    (function\\s*[(<*]) |\n    (function\\s+) |\n    ([_$[:alpha:]][_$[:alnum:]]*\\s*=>)\n  )) |\n  ((async\\s*)?(\n    ((<\\s*$)|([\\(]\\s*((([\\{\\[]\\s*)?$)|((\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})\\s*((:\\s*\\{?$)|((\\s*([^<>\\(\\)\\{\\}]|\\<([^<>]|\\<[^<>]+\\>)+\\>|\\([^\\(\\)]+\\)|\\{[^\\{\\}]+\\})+\\s*)?=\\s*)))|((\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\])\\s*((:\\s*\\[?$)|((\\s*([^<>\\(\\)\\{\\}]|\\<([^<>]|\\<[^<>]+\\>)+\\>|\\([^\\(\\)]+\\)|\\{[^\\{\\}]+\\})+\\s*)?=\\s*)))))) |\n    # sure shot arrow functions even if => is on new line\n(\n  (<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<]|\\<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<]|\\<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<])*\\>)*\\>)*>\\s*)?\n  [(]\\s*(\\/\\*([^\\*]|(\\*[^\\/]))*\\*\\/\\s*)*\n  (\n    ([)]\\s*:) |                                                                                       # ():\n    ((\\.\\.\\.\\s*)?[_$[:alpha:]][_$[:alnum:]]*\\s*:)                                                                  # [(]param: | [(]...param:\n  )\n) |\n(\n  [<]\\s*[_$[:alpha:]][_$[:alnum:]]*\\s+extends\\s*[^=>]                                                              # < typeparam extends\n) |\n# arrow function possible to detect only with => on same line\n(\n  (<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<]|\\<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<]|\\<\\s*([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\]))([^=<>]|=[^<])*\\>)*\\>)*>\\s*)?                                                                                 # typeparameters\n  \\(\\s*(\\/\\*([^\\*]|(\\*[^\\/]))*\\*\\/\\s*)*(([_$[:alpha:]]|(\\{([^\\{\\}]|(\\{[^\\{\\}]*\\}))*\\})|(\\[([^\\[\\]]|(\\[[^\\[\\]]*\\]))*\\])|(\\.\\.\\.\\s*[_$[:alpha:]]))([^()\\'\\\"\\`]|(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))|(\\'([^\\'\\\\]|\\\\.)*\\')|(\\\"([^\\\"\\\\]|\\\\.)*\\\")|(\\`([^\\`\\\\]|\\\\.)*\\`))*)?\\)   # parameters\n  (\\s*:\\s*([^<>\\(\\)\\{\\}]|\\<([^<>]|\\<[^<>]+\\>)+\\>|\\([^\\(\\)]+\\)|\\{[^\\{\\}]+\\})+)?                                                                        # return type\n  \\s*=>                                                                                               # arrow operator\n)\n  ))\n))",
+          "captures": {
+            "1": {
+              "name": "punctuation.accessor.firerules"
+            },
+            "2": {
+              "name": "punctuation.accessor.optional.firerules"
+            },
+            "3": {
+              "name": "entity.name.function.firerules"
+            }
+          }
+        },
+        {
+          "match": "(?:(\\.)|(\\?\\.(?!\\s*[[:digit:]])))\\s*(\\#?[[:upper:]][_$[:digit:][:upper:]]*)(?![_$[:alnum:]])",
+          "captures": {
+            "1": {
+              "name": "punctuation.accessor.firerules"
+            },
+            "2": {
+              "name": "punctuation.accessor.optional.firerules"
+            },
+            "3": {
+              "name": "variable.other.constant.property.firerules"
+            }
+          }
+        },
+        {
+          "match": "(?:(\\.)|(\\?\\.(?!\\s*[[:digit:]])))\\s*(\\#?[_$[:alpha:]][_$[:alnum:]]*)",
+          "captures": {
+            "1": {
+              "name": "punctuation.accessor.firerules"
+            },
+            "2": {
+              "name": "punctuation.accessor.optional.firerules"
+            },
+            "3": {
+              "name": "variable.other.property.firerules"
+            }
+          }
+        },
+        {
+          "name": "variable.other.constant.firerules",
+          "match": "([[:upper:]][_$[:digit:][:upper:]]*)(?![_$[:alnum:]])"
+        },
+        {
+          "name": "variable.other.readwrite.firerules",
+          "match": "[_$[:alpha:]][_$[:alnum:]]*"
+        }
+      ]
+    },
+    "object-identifiers": {
+      "patterns": [
+        {
+          "match": "(?x)(?:(\\.)|(\\?\\.(?!\\s*[[:digit:]])))\\s*(?:\n  (\\#?[[:upper:]][_$[:digit:][:upper:]]*) |\n  (\\#?[_$[:alpha:]][_$[:alnum:]]*)\n)(?=\\s*\\??\\.\\s*\\#?[_$[:alpha:]][_$[:alnum:]]*)",
+          "captures": {
+            "1": {
+              "name": "punctuation.accessor.firerules"
+            },
+            "2": {
+              "name": "punctuation.accessor.optional.firerules"
+            },
+            "3": {
+              "name": "variable.other.constant.object.property.firerules"
+            },
+            "4": {
+              "name": "variable.other.object.property.firerules"
+            }
+          }
+        },
+        {
+          "match": "(?x)(?:\n  ([[:upper:]][_$[:digit:][:upper:]]*) |\n  ([_$[:alpha:]][_$[:alnum:]]*)\n)(?=\\s*\\??\\.\\s*\\#?[_$[:alpha:]][_$[:alnum:]]*)",
+          "captures": {
+            "1": {
+              "name": "variable.other.constant.object.firerules"
+            },
+            "2": {
+              "name": "variable.other.object.firerules"
+            }
+          }
+        }
+      ]
+    },
+    "punctuation-comma": {
+      "name": "punctuation.separator.comma.firerules",
+      "match": ","
+    },
+    "punctuation-semicolon": {
+      "name": "punctuation.terminator.statement.firerules",
+      "match": ";"
+    },
+    "punctuation-accessor": {
+      "match": "(?:(\\.)|(\\?\\.(?!\\s*[[:digit:]])))",
+      "captures": {
+        "1": {
+          "name": "punctuation.accessor.firerules"
+        },
+        "2": {
+          "name": "punctuation.accessor.optional.firerules"
+        }
+      }
+    },
+    "string": {
+      "patterns": [
+        {
+          "include": "#qstring-single"
+        },
+        {
+          "include": "#qstring-double"
+        }
+      ]
+    },
+    "qstring-double": {
+      "name": "string.quoted.double.firerules",
+      "begin": "\"",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.string.begin.firerules"
+        }
+      },
+      "end": "(\")|((?:[^\\\\\\n])$)",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.string.end.firerules"
+        },
+        "2": {
+          "name": "invalid.illegal.newline.firerules"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#string-character-escape"
+        }
+      ]
+    },
+    "qstring-single": {
+      "name": "string.quoted.single.firerules",
+      "begin": "'",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.string.begin.firerules"
+        }
+      },
+      "end": "(\\')|((?:[^\\\\\\n])$)",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.string.end.firerules"
+        },
+        "2": {
+          "name": "invalid.illegal.newline.firerules"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#string-character-escape"
+        }
+      ]
+    },
+    "string-character-escape": {
+      "name": "constant.character.escape.firerules",
+      "match": "\\\\(x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|u\\{[0-9A-Fa-f]+\\}|[0-2][0-7]{0,2}|3[0-6][0-7]?|37[0-7]?|[4-7][0-7]?|.|$)"
+    },
+    "comment": {
+      "patterns": [
+        {
+          "name": "comment.block.documentation.firerules",
+          "begin": "/\\*\\*(?!/)",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.firerules"
+            }
+          },
+          "end": "\\*/",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.firerules"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#docblock"
+            }
+          ]
+        },
+        {
+          "name": "comment.block.firerules",
+          "begin": "(/\\*)(?:\\s*((@)internal)(?=\\s|(\\*/)))?",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.definition.comment.firerules"
+            },
+            "2": {
+              "name": "storage.type.internaldeclaration.firerules"
+            },
+            "3": {
+              "name": "punctuation.decorator.internaldeclaration.firerules"
+            }
+          },
+          "end": "\\*/",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.firerules"
+            }
+          }
+        },
+        {
+          "begin": "(^[ \\t]+)?((//)(?:\\s*((@)internal)(?=\\s|$))?)",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.whitespace.comment.leading.firerules"
+            },
+            "2": {
+              "name": "comment.line.double-slash.firerules"
+            },
+            "3": {
+              "name": "punctuation.definition.comment.firerules"
+            },
+            "4": {
+              "name": "storage.type.internaldeclaration.firerules"
+            },
+            "5": {
+              "name": "punctuation.decorator.internaldeclaration.firerules"
+            }
+          },
+          "end": "(?=$)",
+          "contentName": "comment.line.double-slash.firerules"
+        }
+      ]
+    },
+    "single-line-comment-consuming-line-ending": {
+      "begin": "(^[ \\t]+)?((//)(?:\\s*((@)internal)(?=\\s|$))?)",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.whitespace.comment.leading.firerules"
+        },
+        "2": {
+          "name": "comment.line.double-slash.firerules"
+        },
+        "3": {
+          "name": "punctuation.definition.comment.firerules"
+        },
+        "4": {
+          "name": "storage.type.internaldeclaration.firerules"
+        },
+        "5": {
+          "name": "punctuation.decorator.internaldeclaration.firerules"
+        }
+      },
+      "end": "(?=^)",
+      "contentName": "comment.line.double-slash.firerules"
+    },
+    "docblock": {
+      "patterns": [
+        {
+          "match": "(?x)\n((@)(?:access|api))\n\\s+\n(private|protected|public)\n\\b",
+          "captures": {
+            "1": {
+              "name": "storage.type.class.jsdoc"
+            },
+            "2": {
+              "name": "punctuation.definition.block.tag.jsdoc"
+            },
+            "3": {
+              "name": "constant.language.access-type.jsdoc"
+            }
+          }
+        },
+        {
+          "match": "(?x)\n((@)author)\n\\s+\n(\n  [^@\\s<>*/]\n  (?:[^@<>*/]|\\*[^/])*\n)\n(?:\n  \\s*\n  (<)\n  ([^>\\s]+)\n  (>)\n)?",
+          "captures": {
+            "1": {
+              "name": "storage.type.class.jsdoc"
+            },
+            "2": {
+              "name": "punctuation.definition.block.tag.jsdoc"
+            },
+            "3": {
+              "name": "entity.name.type.instance.jsdoc"
+            },
+            "4": {
+              "name": "punctuation.definition.bracket.angle.begin.jsdoc"
+            },
+            "5": {
+              "name": "constant.other.email.link.underline.jsdoc"
+            },
+            "6": {
+              "name": "punctuation.definition.bracket.angle.end.jsdoc"
+            }
+          }
+        },
+        {
+          "match": "(?x)\n((@)borrows) \\s+\n((?:[^@\\s*/]|\\*[^/])+)    # <that namepath>\n\\s+ (as) \\s+              # as\n((?:[^@\\s*/]|\\*[^/])+)    # <this namepath>",
+          "captures": {
+            "1": {
+              "name": "storage.type.class.jsdoc"
+            },
+            "2": {
+              "name": "punctuation.definition.block.tag.jsdoc"
+            },
+            "3": {
+              "name": "entity.name.type.instance.jsdoc"
+            },
+            "4": {
+              "name": "keyword.operator.control.jsdoc"
+            },
+            "5": {
+              "name": "entity.name.type.instance.jsdoc"
+            }
+          }
+        },
+        {
+          "name": "meta.example.jsdoc",
+          "begin": "((@)example)\\s+",
+          "end": "(?=@|\\*/)",
+          "beginCaptures": {
+            "1": {
+              "name": "storage.type.class.jsdoc"
+            },
+            "2": {
+              "name": "punctuation.definition.block.tag.jsdoc"
+            }
+          },
+          "patterns": [
+            {
+              "match": "^\\s\\*\\s+"
+            },
+            {
+              "contentName": "constant.other.description.jsdoc",
+              "begin": "\\G(<)caption(>)",
+              "beginCaptures": {
+                "0": {
+                  "name": "entity.name.tag.inline.jsdoc"
+                },
+                "1": {
+                  "name": "punctuation.definition.bracket.angle.begin.jsdoc"
+                },
+                "2": {
+                  "name": "punctuation.definition.bracket.angle.end.jsdoc"
+                }
+              },
+              "end": "(</)caption(>)|(?=\\*/)",
+              "endCaptures": {
+                "0": {
+                  "name": "entity.name.tag.inline.jsdoc"
+                },
+                "1": {
+                  "name": "punctuation.definition.bracket.angle.begin.jsdoc"
+                },
+                "2": {
+                  "name": "punctuation.definition.bracket.angle.end.jsdoc"
+                }
+              }
+            },
+            {
+              "match": "[^\\s@*](?:[^*]|\\*[^/])*",
+              "captures": {
+                "0": {
+                  "name": "source.embedded.firerules"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "match": "(?x) ((@)kind) \\s+ (class|constant|event|external|file|function|member|mixin|module|namespace|typedef) \\b",
+          "captures": {
+            "1": {
+              "name": "storage.type.class.jsdoc"
+            },
+            "2": {
+              "name": "punctuation.definition.block.tag.jsdoc"
+            },
+            "3": {
+              "name": "constant.language.symbol-type.jsdoc"
+            }
+          }
+        },
+        {
+          "match": "(?x)\n((@)see)\n\\s+\n(?:\n  # URL\n  (\n    (?=https?://)\n    (?:[^\\s*]|\\*[^/])+\n  )\n  |\n  # JSDoc namepath\n  (\n    (?!\n      # Avoid matching bare URIs (also acceptable as links)\n      https?://\n      |\n      # Avoid matching {@inline tags}; we match those below\n      (?:\\[[^\\[\\]]*\\])? # Possible description [preceding]{@tag}\n      {@(?:link|linkcode|linkplain|tutorial)\\b\n    )\n    # Matched namepath\n    (?:[^@\\s*/]|\\*[^/])+\n  )\n)",
+          "captures": {
+            "1": {
+              "name": "storage.type.class.jsdoc"
+            },
+            "2": {
+              "name": "punctuation.definition.block.tag.jsdoc"
+            },
+            "3": {
+              "name": "variable.other.link.underline.jsdoc"
+            },
+            "4": {
+              "name": "entity.name.type.instance.jsdoc"
+            }
+          }
+        },
+        {
+          "match": "(?x)\n((@)template)\n\\s+\n# One or more valid identifiers\n(\n  [A-Za-z_$]         # First character: non-numeric word character\n  [\\w$.\\[\\]]*        # Rest of identifier\n  (?:                # Possible list of additional identifiers\n    \\s* , \\s*\n    [A-Za-z_$]\n    [\\w$.\\[\\]]*\n  )*\n)",
+          "captures": {
+            "1": {
+              "name": "storage.type.class.jsdoc"
+            },
+            "2": {
+              "name": "punctuation.definition.block.tag.jsdoc"
+            },
+            "3": {
+              "name": "variable.other.jsdoc"
+            }
+          }
+        },
+        {
+          "match": "(?x)\n(\n  (@)\n  (?:arg|argument|const|constant|member|namespace|param|var)\n)\n\\s+\n(\n  [A-Za-z_$]\n  [\\w$.\\[\\]]*\n)",
+          "captures": {
+            "1": {
+              "name": "storage.type.class.jsdoc"
+            },
+            "2": {
+              "name": "punctuation.definition.block.tag.jsdoc"
+            },
+            "3": {
+              "name": "variable.other.jsdoc"
+            }
+          }
+        },
+        {
+          "begin": "((@)typedef)\\s+(?={)",
+          "beginCaptures": {
+            "1": {
+              "name": "storage.type.class.jsdoc"
+            },
+            "2": {
+              "name": "punctuation.definition.block.tag.jsdoc"
+            }
+          },
+          "end": "(?=\\s|\\*/|[^{}\\[\\]A-Za-z_$])",
+          "patterns": [
+            {
+              "include": "#jsdoctype"
+            },
+            {
+              "name": "entity.name.type.instance.jsdoc",
+              "match": "(?:[^@\\s*/]|\\*[^/])+"
+            }
+          ]
+        },
+        {
+          "begin": "((@)(?:arg|argument|const|constant|member|namespace|param|prop|property|var))\\s+(?={)",
+          "beginCaptures": {
+            "1": {
+              "name": "storage.type.class.jsdoc"
+            },
+            "2": {
+              "name": "punctuation.definition.block.tag.jsdoc"
+            }
+          },
+          "end": "(?=\\s|\\*/|[^{}\\[\\]A-Za-z_$])",
+          "patterns": [
+            {
+              "include": "#jsdoctype"
+            },
+            {
+              "name": "variable.other.jsdoc",
+              "match": "([A-Za-z_$][\\w$.\\[\\]]*)"
+            },
+            {
+              "name": "variable.other.jsdoc",
+              "match": "(?x)\n(\\[)\\s*\n[\\w$]+\n(?:\n  (?:\\[\\])?                                        # Foo[ ].bar properties within an array\n  \\.                                                # Foo.Bar namespaced parameter\n  [\\w$]+\n)*\n(?:\n  \\s*\n  (=)                                                # [foo=bar] Default parameter value\n  \\s*\n  (\n    # The inner regexes are to stop the match early at */ and to not stop at escaped quotes\n    (?>\n      \"(?:(?:\\*(?!/))|(?:\\\\(?!\"))|[^*\\\\])*?\" |                      # [foo=\"bar\"] Double-quoted\n      '(?:(?:\\*(?!/))|(?:\\\\(?!'))|[^*\\\\])*?' |                      # [foo='bar'] Single-quoted\n      \\[ (?:(?:\\*(?!/))|[^*])*? \\] |                                # [foo=[1,2]] Array literal\n      (?:(?:\\*(?!/))|\\s(?!\\s*\\])|\\[.*?(?:\\]|(?=\\*/))|[^*\\s\\[\\]])*   # Everything else\n    )*\n  )\n)?\n\\s*(?:(\\])((?:[^*\\s]|\\*[^\\s/])+)?|(?=\\*/))",
+              "captures": {
+                "1": {
+                  "name": "punctuation.definition.optional-value.begin.bracket.square.jsdoc"
+                },
+                "2": {
+                  "name": "keyword.operator.assignment.jsdoc"
+                },
+                "3": {
+                  "name": "source.embedded.firerules"
+                },
+                "4": {
+                  "name": "punctuation.definition.optional-value.end.bracket.square.jsdoc"
+                },
+                "5": {
+                  "name": "invalid.illegal.syntax.jsdoc"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "begin": "(?x)\n(\n  (@)\n  (?:define|enum|exception|export|extends|lends|implements|modifies\n  |namespace|private|protected|returns?|suppress|this|throws|type\n  |yields?)\n)\n\\s+(?={)",
+          "beginCaptures": {
+            "1": {
+              "name": "storage.type.class.jsdoc"
+            },
+            "2": {
+              "name": "punctuation.definition.block.tag.jsdoc"
+            }
+          },
+          "end": "(?=\\s|\\*/|[^{}\\[\\]A-Za-z_$])",
+          "patterns": [
+            {
+              "include": "#jsdoctype"
+            }
+          ]
+        },
+        {
+          "match": "(?x)\n(\n  (@)\n  (?:alias|augments|callback|constructs|emits|event|fires|exports?\n  |extends|external|function|func|host|lends|listens|interface|memberof!?\n  |method|module|mixes|mixin|name|requires|see|this|typedef|uses)\n)\n\\s+\n(\n  (?:\n    [^{}@\\s*] | \\*[^/]\n  )+\n)",
+          "captures": {
+            "1": {
+              "name": "storage.type.class.jsdoc"
+            },
+            "2": {
+              "name": "punctuation.definition.block.tag.jsdoc"
+            },
+            "3": {
+              "name": "entity.name.type.instance.jsdoc"
+            }
+          }
+        },
+        {
+          "contentName": "variable.other.jsdoc",
+          "begin": "((@)(?:default(?:value)?|license|version))\\s+(([''\"]))",
+          "beginCaptures": {
+            "1": {
+              "name": "storage.type.class.jsdoc"
+            },
+            "2": {
+              "name": "punctuation.definition.block.tag.jsdoc"
+            },
+            "3": {
+              "name": "variable.other.jsdoc"
+            },
+            "4": {
+              "name": "punctuation.definition.string.begin.jsdoc"
+            }
+          },
+          "end": "(\\3)|(?=$|\\*/)",
+          "endCaptures": {
+            "0": {
+              "name": "variable.other.jsdoc"
+            },
+            "1": {
+              "name": "punctuation.definition.string.end.jsdoc"
+            }
+          }
+        },
+        {
+          "match": "((@)(?:default(?:value)?|license|tutorial|variation|version))\\s+([^\\s*]+)",
+          "captures": {
+            "1": {
+              "name": "storage.type.class.jsdoc"
+            },
+            "2": {
+              "name": "punctuation.definition.block.tag.jsdoc"
+            },
+            "3": {
+              "name": "variable.other.jsdoc"
+            }
+          }
+        },
+        {
+          "name": "storage.type.class.jsdoc",
+          "match": "(?x) (@) (?:abstract|access|alias|api|arg|argument|async|attribute|augments|author|beta|borrows|bubbles |callback|chainable|class|classdesc|code|config|const|constant|constructor|constructs|copyright |default|defaultvalue|define|deprecated|desc|description|dict|emits|enum|event|example|exception |exports?|extends|extension(?:_?for)?|external|externs|file|fileoverview|final|fires|for|func |function|generator|global|hideconstructor|host|ignore|implements|implicitCast|inherit[Dd]oc |inner|instance|interface|internal|kind|lends|license|listens|main|member|memberof!?|method |mixes|mixins?|modifies|module|name|namespace|noalias|nocollapse|nocompile|nosideeffects |override|overview|package|param|polymer(?:Behavior)?|preserve|private|prop|property|protected |public|read[Oo]nly|record|require[ds]|returns?|see|since|static|struct|submodule|summary |suppress|template|this|throws|todo|tutorial|type|typedef|unrestricted|uses|var|variation |version|virtual|writeOnce|yields?) \\b",
+          "captures": {
+            "1": {
+              "name": "punctuation.definition.block.tag.jsdoc"
+            }
+          }
+        },
+        {
+          "include": "#inline-tags"
+        },
+        {
+          "match": "((@)(?:[_$[:alpha:]][_$[:alnum:]]*))(?=\\s+)",
+          "captures": {
+            "1": {
+              "name": "storage.type.class.jsdoc"
+            },
+            "2": {
+              "name": "punctuation.definition.block.tag.jsdoc"
+            }
+          }
+        }
+      ]
+    },
+    "brackets": {
+      "patterns": [
+        {
+          "begin": "{",
+          "end": "}|(?=\\*/)",
+          "patterns": [
+            {
+              "include": "#brackets"
+            }
+          ]
+        },
+        {
+          "begin": "\\[",
+          "end": "\\]|(?=\\*/)",
+          "patterns": [
+            {
+              "include": "#brackets"
+            }
+          ]
+        }
+      ]
+    },
+    "inline-tags": {
+      "patterns": [
+        {
+          "name": "constant.other.description.jsdoc",
+          "match": "(\\[)[^\\]]+(\\])(?={@(?:link|linkcode|linkplain|tutorial))",
+          "captures": {
+            "1": {
+              "name": "punctuation.definition.bracket.square.begin.jsdoc"
+            },
+            "2": {
+              "name": "punctuation.definition.bracket.square.end.jsdoc"
+            }
+          }
+        },
+        {
+          "name": "entity.name.type.instance.jsdoc",
+          "begin": "({)((@)(?:link(?:code|plain)?|tutorial))\\s*",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.definition.bracket.curly.begin.jsdoc"
+            },
+            "2": {
+              "name": "storage.type.class.jsdoc"
+            },
+            "3": {
+              "name": "punctuation.definition.inline.tag.jsdoc"
+            }
+          },
+          "end": "}|(?=\\*/)",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.bracket.curly.end.jsdoc"
+            }
+          },
+          "patterns": [
+            {
+              "match": "\\G((?=https?://)(?:[^|}\\s*]|\\*[/])+)(\\|)?",
+              "captures": {
+                "1": {
+                  "name": "variable.other.link.underline.jsdoc"
+                },
+                "2": {
+                  "name": "punctuation.separator.pipe.jsdoc"
+                }
+              }
+            },
+            {
+              "match": "\\G((?:[^{}@\\s|*]|\\*[^/])+)(\\|)?",
+              "captures": {
+                "1": {
+                  "name": "variable.other.description.jsdoc"
+                },
+                "2": {
+                  "name": "punctuation.separator.pipe.jsdoc"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "type": {
+      "patterns": [
+        {
+          "include": "#comment"
+        },
+        {
+          "include": "#string"
+        },
+        {
+          "include": "#numeric-literal"
+        },
+        {
+          "include": "#type-primitive"
+        },
+        {
+          "include": "#type-builtin-literals"
+        }
+      ]
+    },
+    "type-primitive": {
+      "name": "support.type.primitive.js",
+      "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(int|uint|double|bool|string|bytes|list|map|null_type|type|duration|latlng|timestamp|path|request|resource|mapdiff|set)(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))"
+    },
+    "type-builtin-literals": {
+      "name": "support.type.builtin.js",
+      "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(true|false|null)(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))"
+    },
+    "jsdoctype": {
+      "patterns": [
+        {
+          "contentName": "entity.name.type.instance.jsdoc",
+          "begin": "\\G({)",
+          "beginCaptures": {
+            "0": {
+              "name": "entity.name.type.instance.jsdoc"
+            },
+            "1": {
+              "name": "punctuation.definition.bracket.curly.begin.jsdoc"
+            }
+          },
+          "end": "((}))\\s*|(?=\\*/)",
+          "endCaptures": {
+            "1": {
+              "name": "entity.name.type.instance.jsdoc"
+            },
+            "2": {
+              "name": "punctuation.definition.bracket.curly.end.jsdoc"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#brackets"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
