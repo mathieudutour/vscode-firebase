@@ -1,25 +1,15 @@
 import * as assert from 'assert'
 
-// You can import and use all API from the 'vscode' module
-// as well as import your extension to test it
-import * as vscode from 'vscode'
 import { findType, accessModifiers } from '../../grammar'
 
-suite('Extension Test Suite', () => {
-  vscode.window.showInformationMessage('Start all tests.')
-
-  test('Sample test', () => {
-    assert.equal(-1, [1, 2, 3].indexOf(5))
-    assert.equal(-1, [1, 2, 3].indexOf(0))
-  })
-})
-
-test('finds named TypeInfo', () => {
-  ;['math', 'document'].forEach(async (name) => {
-    const info = await findType(name)
-    assert.ok(info !== null)
-    assert.ok(info.methods)
-  })
+test('finds named TypeInfo', async () => {
+  await Promise.all(
+    ['math', 'document'].map(async (name) => {
+      const info = await findType(name)
+      assert.ok(info !== null)
+      assert.ok(info.methods)
+    })
+  )
 })
 
 test('supports full and relative type paths', async () => {
