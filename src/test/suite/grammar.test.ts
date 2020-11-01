@@ -39,7 +39,7 @@ test('generates snippets for parameterized methods', async () => {
 
   assert.ok(info !== null)
   assert.ok(info.methods)
-  assert.strictEqual(info.methods.split.snippet, 'split(${1:string})$0')
+  assert.strictEqual(info.methods.split.snippet, 'split(${1:regex})$0')
   assert.strictEqual(info.methods.size.snippet, 'size()$0')
 })
 
