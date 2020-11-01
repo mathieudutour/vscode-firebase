@@ -4,7 +4,7 @@ import { findType, accessModifiers } from '../../grammar'
 
 test('finds named TypeInfo', async () => {
   await Promise.all(
-    ['math', 'document'].map(async (name) => {
+    ['math', 'duration'].map(async (name) => {
       const info = await findType(name)
       assert.ok(info !== null)
       assert.ok(info.methods)
@@ -30,7 +30,7 @@ test('applies basic type members to implementations', async () => {
   assert.ok(info.methods)
   assert.strictEqual(
     info.methods.year.about,
-    'The year value as an `int`, from 1 to 9999.'
+    'Get the year value of the timestamp.'
   )
 })
 
@@ -39,7 +39,7 @@ test('generates snippets for parameterized methods', async () => {
 
   assert.ok(info !== null)
   assert.ok(info.methods)
-  assert.strictEqual(info.methods.split.snippet, 'split(${1:regex})$0')
+  assert.strictEqual(info.methods.split.snippet, 'split(${1:string})$0')
   assert.strictEqual(info.methods.size.snippet, 'size()$0')
 })
 
