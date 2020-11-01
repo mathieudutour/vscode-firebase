@@ -1,0 +1,277 @@
+{
+  "title": "JSON schema for Firebase configuration files",
+  "type": "object",
+  "properties": {
+    "hosting": {
+      "description": "Holds the main configuration entries",
+      "type": ["object", "array"],
+      "properties": {
+        "public": {
+          "description": "The directory that gets uploaded to Firebase",
+          "type": "string"
+        },
+        "ignore": {
+          "description": "Specifies files to ignore on deploy",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "redirects": {
+          "description": "Specifies all http redirects",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "source": {
+                "description": "A glob pattern that is matched against all URL paths at the start of every request",
+                "type": "string"
+              },
+              "destination": {
+                "description": "The value used within the Location header entry",
+                "type": "string"
+              },
+              "type": {
+                "description": "The redirect status code",
+                "type": "number",
+                "enum": [301, 302]
+              }
+            }
+          }
+        },
+        "rewrites": {
+          "description": "Holds rules for rewrites",
+          "type": "array",
+          "items": {
+            "description": "A redirect item",
+            "type": "object",
+            "properties": {
+              "source": {
+                "description": "A glob specifying a rewrite rule",
+                "type": "string"
+              },
+              "destination": {
+                "description": "A local destination",
+                "type": "string"
+              }
+            }
+          }
+        },
+        "headers": {
+          "description": "An array of custom header definitions",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "source": {
+                "description": "Matched against the original request path, regardless of rewrite rules",
+                "type": "string"
+              },
+              "headers": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "key": {
+                      "description": "The header key",
+                      "type": "string"
+                    },
+                    "value": {
+                      "description": "The header value",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "cleanUrls": {
+          "description": "If true, firebase will drop all .html extensions from file uploads",
+          "type": "boolean"
+        },
+        "trailingSlash": {
+          "description": "Controls whether URLs should have trailing slashes or not",
+          "type": "boolean"
+        }
+      },
+      "items": {
+        "type": "object",
+        "properties": {
+          "target": {
+            "description": "Deploy targets are short-name identifiers (that you define yourself) for Firebase resources in your Firebase project, like a Hosting site with unique static assets or a group of Realtime Database instances that share the same security rules.\nSee: https://firebase.google.com/docs/cli/targets\n\nTo create a deploy target and apply a target-name to a Hosting site, run the following CLI command:\nfirebase target:apply type target-name resource-name\n",
+            "type": "string"
+          },
+          "public": {
+            "description": "The directory that gets uploaded to Firebase",
+            "type": "string"
+          },
+          "ignore": {
+            "description": "Specifies files to ignore on deploy",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "redirects": {
+            "description": "Specifies all http redirects",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "source": {
+                  "description": "A glob pattern that is matched against all URL paths at the start of every request",
+                  "type": "string"
+                },
+                "destination": {
+                  "description": "The value used within the Location header entry",
+                  "type": "string"
+                },
+                "type": {
+                  "description": "The redirect status code",
+                  "type": "number",
+                  "enum": [301, 302]
+                }
+              }
+            }
+          },
+          "rewrites": {
+            "description": "Holds rules for rewrites",
+            "type": "array",
+            "items": {
+              "description": "A redirect item",
+              "type": "object",
+              "properties": {
+                "source": {
+                  "description": "A glob specifying a rewrite rule",
+                  "type": "string"
+                },
+                "destination": {
+                  "description": "A local destination",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "headers": {
+            "description": "An array of custom header definitions",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "source": {
+                  "description": "Matched against the original request path, regardless of rewrite rules",
+                  "type": "string"
+                },
+                "headers": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "key": {
+                        "description": "The header key",
+                        "type": "string"
+                      },
+                      "value": {
+                        "description": "The header value",
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "cleanUrls": {
+            "description": "If true, firebase will drop all .html extensions from file uploads",
+            "type": "boolean"
+          },
+          "trailingSlash": {
+            "description": "Controls whether URLs should have trailing slashes or not",
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "storage": {
+      "description": "Either define shared security rules which will apply to all of your storage buckets or define multiple targets each with its own unique file that contains the security rules for the corresponding storage bucket.",
+      "type": ["object", "array"],
+      "properties": {
+        "rules": {
+          "type": "string",
+          "description": "Points to the file that contains security rules for storage buckets"
+        }
+      },
+      "items": {
+        "type": "object",
+        "properties": {
+          "target": {
+            "description": "Define a resource target to which you apply your storage security rules file",
+            "type": "string"
+          },
+          "rules": {
+            "description": "Points to the file that contains storage bucket security rules",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "database": {
+      "description": "Realtime Database configuration - Define either one database rules set or multiple targets each with its own unique rules file that contains the security rules for the corresponding realtime database.",
+      "type": ["object", "array"],
+      "properties": {
+        "rules": {
+          "type": "string",
+          "description": "Points to the file that contains security rules for your Realtime Database."
+        }
+      },
+      "items": {
+        "type": "object",
+        "properties": {
+          "target": {
+            "description": "Define a database target name to which you apply your security rules file",
+            "type": "string"
+          },
+          "rules": {
+            "description": "Points to the file that contains Realtime Database security rules",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "firestore": {
+      "description": "Firestore configuration - define the Firestore security rules file to be deployed and also define Firestore indexes",
+      "type": "object",
+      "properties": {
+        "rules": {
+          "type": "string",
+          "description": "Points to the file that contains security rules for Firestore"
+        },
+        "indexes": {
+          "type": "string",
+          "description": "Points to the file that defines indexes for Firestore"
+        }
+      }
+    },
+    "functions": {
+      "properties": {
+        "predeploy": {
+          "description": "Pre-deploy lifecycle hook - commands in the string array are sequentially executed. If any one of them fails the function will not deploy and the postdeploy lifecycle hook will not run.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "postdeploy": {
+          "description": "Post-deploy lifecycle hook will only execute if pre-deploy and function deployment completed successfully.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "type": "object",
+      "description": "You can define pre-deploy and post-deploy scripts in your functions configuration in firebase.json"
+    }
+  }
+}
