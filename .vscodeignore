@@ -3,10 +3,9 @@
 out/test/**
 src/**
 .gitignore
-.yarnrc
-vsc-extension-quickstart.md
+prettier.config.js
+.github/**
 **/tsconfig.json
-**/.eslintrc.json
 **/*.map
 **/*.ts
 syntaxes/sample.rules

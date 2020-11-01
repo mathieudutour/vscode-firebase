@@ -24,7 +24,7 @@
     "firebase",
     "firestore"
   ],
-  "icon": "./docs/logo.png",
+  "icon": "docs/logo.png",
   "galleryBanner": {},
   "badges": [],
   "activationEvents": [
