@@ -3,7 +3,7 @@
   "displayName": "Firebase",
   "publisher": "me-dutour-mathieu",
   "description": "Firestore Security Rules syntaxt highlighting and linting",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "repository": {
     "type": "git",
     "url": "https://github.com/mathieudutour/vscode-firebase.git"
@@ -94,6 +94,8 @@
   },
   "dependencies": {
     "configstore": "^5.0.1",
+    "http-proxy-agent": "^4.0.1",
+    "https-proxy-agent": "^5.0.0",
     "request": "^2.88.2"
   }
 }
