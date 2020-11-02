@@ -2,6 +2,10 @@
 
 All notable changes to the "vscode-firebase" extension will be documented in this file.
 
+## 0.0.5
+
+- Handle firebase project aliases
+
 ## 0.0.4
 
 - Add missing dependencies

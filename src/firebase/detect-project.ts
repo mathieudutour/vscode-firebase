@@ -23,5 +23,18 @@ export function detectProject(cwd: string) {
     return undefined
   }
 
+  let projectName = activeProjects[projectRoot]
+
+  // handle project aliases
+  const firebasercPath = path.join(projectRoot, '.firebaserc')
+  if (projectName && fs.readFileSync(firebasercPath)) {
+    try {
+      const firebaserc = JSON.parse(fs.readFileSync(firebasercPath, 'utf8'))
+      if (firebaserc.projects[projectName]) {
+        projectName = firebaserc.projects[projectName]
+      }
+    } catch (err) {}
+  }
+
   return activeProjects[projectRoot]
 }
