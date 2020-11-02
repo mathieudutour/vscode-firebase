@@ -1,5 +1,8 @@
 import request from 'request'
+import { Url, parse as parseUrl } from 'url'
 import * as auth from './auth'
+import HttpProxyAgent from 'http-proxy-agent'
+import HttpsProxyAgent from 'https-proxy-agent'
 
 let accessToken: string | undefined
 let refreshToken: string | undefined
@@ -11,10 +14,16 @@ const commandScopes: string[] = [
   'openid',
 ]
 
+let proxyUrl: string | null = null
+let strictSSL: boolean = true
+
 const _request = function (
   options: request.UrlOptions & request.CoreOptions,
   logOptions: { skipResponseBody?: boolean } = {}
 ) {
+  const agent = getProxyAgent(options.url, { proxyUrl, strictSSL })
+  options.agent = agent
+  options.strictSSL = strictSSL
   options.headers = options.headers || {}
   options.headers['connection'] = 'keep-alive'
   return new Promise<{ status: number; response: request.Response; body: any }>(
@@ -42,6 +51,10 @@ const api = {
   clientSecret: 'j9iVZfS8kkCEFUPaAeJV0sAi',
   googleOrigin: 'https://www.googleapis.com',
   rulesOrigin: 'https://firebaserules.googleapis.com',
+  configure(_proxyUrl: string, _strictSSL: boolean) {
+    proxyUrl = _proxyUrl
+    strictSSL = _strictSSL
+  },
   setRefreshToken(token: string) {
     refreshToken = token
   },
@@ -91,7 +104,7 @@ const api = {
     if (validMethods.indexOf(method) < 0) {
       method = 'GET'
     }
-    const reqOptions = {
+    const reqOptions: request.UrlOptions & request.CoreOptions = {
       method: method,
       url: options.origin + resource,
       json: options.json,
@@ -101,10 +114,8 @@ const api = {
     }
 
     if (options.data) {
-      // @ts-ignore
       reqOptions.body = options.data
     } else if (options.form) {
-      // @ts-ignore
       reqOptions.form = options.form
     }
 
@@ -122,3 +133,62 @@ const api = {
   },
 }
 export default api
+
+// proxy handling
+
+function getSystemProxyURI(requestURL: Url): string | null {
+  if (requestURL.protocol === 'http:') {
+    return process.env.HTTP_PROXY || process.env.http_proxy || null
+  } else if (requestURL.protocol === 'https:') {
+    return (
+      process.env.HTTPS_PROXY ||
+      process.env.https_proxy ||
+      process.env.HTTP_PROXY ||
+      process.env.http_proxy ||
+      null
+    )
+  }
+
+  return null
+}
+
+interface ProxyOptions {
+  proxyUrl?: string | null
+  strictSSL?: boolean
+}
+
+function getProxyAgent(
+  rawRequestURL: string | Url,
+  options: ProxyOptions = {}
+): any {
+  const requestURL =
+    typeof rawRequestURL === 'string' ? parseUrl(rawRequestURL) : rawRequestURL
+  const proxyURL = options.proxyUrl || getSystemProxyURI(requestURL)
+
+  if (!proxyURL) {
+    return null
+  }
+
+  const proxyEndpoint = parseUrl(proxyURL)
+
+  if (
+    !proxyEndpoint.hostname ||
+    !proxyEndpoint.protocol ||
+    !/^https?:$/.test(proxyEndpoint.protocol)
+  ) {
+    return null
+  }
+
+  const opts = {
+    host: proxyEndpoint.hostname,
+    port: Number(proxyEndpoint.port),
+    auth: proxyEndpoint.auth,
+    rejectUnauthorized:
+      typeof options.strictSSL === 'boolean' ? options.strictSSL : true,
+  }
+
+  return requestURL.protocol === 'http:'
+    ? // @ts-ignore
+      new HttpProxyAgent(opts)
+    : new HttpsProxyAgent(opts)
+}

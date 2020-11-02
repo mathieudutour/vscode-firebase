@@ -54,8 +54,8 @@ export interface TypeInfo extends SymbolInfo {
 }
 
 export interface MethodInfo extends SymbolInfo {
-  parameters?: string[]
-  returns?: string
+  parameters: string[]
+  returns: string
   /**
    * Snippets are generated during compile if `parameters` have been defined.
    * @see https://code.visualstudio.com/docs/editor/userdefinedsnippets
@@ -398,6 +398,7 @@ const basicTypes: { [key: string]: TypeInfo } = {
         about:
           'Create a new list by removing the elements of another list from this list.',
         parameters: ['list'],
+        returns: 'list',
       },
       size: {
         about: 'Get the number of values in the list.',
@@ -813,31 +814,38 @@ const grammar: { [key: string]: TypeInfo } = {
       debug: {
         about:
           'A basic debug function that prints Security Rules language objects, variables and statement results as they are being evaluated by the Security Rules engine. The outputs of `debug` are written to `firestore-debug.log`.',
+        parameters: ['any'],
+        returns: 'any',
       },
       bool: {
         about:
           'Strings can be converted into booleans using the `bool()` function.',
-        returns: 'boolean',
+        returns: 'bool',
+        parameters: ['string'],
       },
       float: {
         about:
           'String and integer values can be converted to float values using the `float()` function.',
         returns: 'float',
+        parameters: ['string_or_int'],
       },
       int: {
         about:
           'String and float values can be converted to integers using the `int()` function.',
         returns: 'integer',
+        parameters: ['string_or_float'],
       },
       path: {
         about:
           'String values can be converted to path using the `path()` function.',
         returns: 'path',
+        parameters: ['string'],
       },
       string: {
         about:
           'Boolean, integer, float, and null values can be converted into strings using the `string()` function.',
         returns: 'string',
+        parameters: ['any'],
       },
     },
   },

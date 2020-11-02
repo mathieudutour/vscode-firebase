@@ -122,6 +122,7 @@ function addMethods(
     const c = new CompletionItem(name, CompletionItemKind.Method)
 
     c.documentation = sanitize(m.about)
+    c.detail = `(${m.parameters?.join(', ')}) -> ${m.returns}`
     if (m.snippet) {
       c.insertText = new SnippetString(m.snippet)
     }
