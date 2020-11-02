@@ -188,7 +188,6 @@ function getProxyAgent(
   }
 
   return requestURL.protocol === 'http:'
-    ? // @ts-ignore
-      new HttpProxyAgent(opts)
-    : new HttpsProxyAgent(opts)
+    ? HttpProxyAgent(opts)
+    : HttpsProxyAgent(opts)
 }
