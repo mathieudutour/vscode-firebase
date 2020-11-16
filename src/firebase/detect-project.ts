@@ -1,11 +1,31 @@
-import fs from 'fs'
-import path from 'path'
+import { TextDecoder } from 'util'
+import * as vscode from 'vscode'
 import { configStore } from './config-store'
 
-function detectProjectRoot(cwd: string) {
+const memory: Map<vscode.Uri, vscode.Uri> = new Map()
+
+async function exists(path: vscode.Uri) {
+  const { fs } = vscode.workspace
+
+  try {
+    await fs.readFile(path)
+    return true
+  } catch (err) {
+    return false
+  }
+}
+
+async function detectProjectRoot(cwd: vscode.Uri) {
+  const existingRoot = memory.get(cwd)
+  if (existingRoot && (await exists(existingRoot))) {
+    return existingRoot
+  }
+
   let projectRootDir = cwd
-  while (!fs.existsSync(path.resolve(projectRootDir, './firebase.json'))) {
-    const parentDir = path.dirname(projectRootDir)
+  while (
+    !(await exists(vscode.Uri.joinPath(projectRootDir, './firebase.json')))
+  ) {
+    const parentDir = vscode.Uri.joinPath(projectRootDir, '../')
     if (parentDir === projectRootDir) {
       return null
     }
@@ -14,27 +34,37 @@ function detectProjectRoot(cwd: string) {
   return projectRootDir
 }
 
-export function detectProject(cwd: string) {
+export async function detectProjectForFile(filePath: vscode.Uri) {
+  const { fs } = vscode.workspace
   const activeProjects = configStore.get('activeProjects') || {}
 
-  const projectRoot = detectProjectRoot(cwd)
+  const cwd = vscode.Uri.joinPath(filePath, '../')
+
+  const projectRoot = await detectProjectRoot(cwd)
 
   if (!projectRoot) {
     return undefined
   }
 
-  let projectName = activeProjects[projectRoot]
+  memory.set(cwd, projectRoot)
+
+  let projectName =
+    activeProjects[projectRoot.path] ||
+    activeProjects[projectRoot.path.replace(/\/$/, '')]
 
   // handle project aliases
-  const firebasercPath = path.join(projectRoot, '.firebaserc')
-  if (projectName && fs.readFileSync(firebasercPath)) {
+  if (projectName) {
+    const firebasercPath = vscode.Uri.joinPath(projectRoot, '.firebaserc')
     try {
-      const firebaserc = JSON.parse(fs.readFileSync(firebasercPath, 'utf8'))
+      const firebasercContent = await fs.readFile(firebasercPath)
+      const firebaserc = JSON.parse(
+        new TextDecoder('utf-8').decode(firebasercContent)
+      )
       if (firebaserc.projects[projectName]) {
         projectName = firebaserc.projects[projectName]
       }
     } catch (err) {}
   }
 
-  return activeProjects[projectRoot]
+  return projectName
 }
