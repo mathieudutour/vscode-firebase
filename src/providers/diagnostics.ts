@@ -157,7 +157,11 @@ export class DiagnosticProvider {
         ? vscode.DiagnosticSeverity.Error
         : vscode.DiagnosticSeverity.Warning
     )
-    // diagnostic.code = EMOJI_MENTION
+
+    if (issue.description.indexOf('Unused function') === 0) {
+      diagnostic.tags = [vscode.DiagnosticTag.Unnecessary]
+    }
+
     return diagnostic
   }
 }
