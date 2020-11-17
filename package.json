@@ -3,7 +3,7 @@
   "displayName": "Firebase",
   "publisher": "me-dutour-mathieu",
   "description": "Firestore Security Rules syntaxt highlighting and linting",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "repository": {
     "type": "git",
     "url": "https://github.com/mathieudutour/vscode-firebase.git"
@@ -39,6 +39,20 @@
     "workspace"
   ],
   "contributes": {
+    "configuration": {
+      "title": "Firebase",
+      "properties": {
+        "firebase.coverageFile": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "scope": "resource",
+          "default": null,
+          "markdownDescription": "Specifies the path to the Firebase [rule coverage report](https://firebase.google.com/docs/rules/emulator-reports#cloud-firestore) (relative to the `firebase.json` project file)."
+        }
+      }
+    },
     "languages": [
       {
         "id": "firerules",
