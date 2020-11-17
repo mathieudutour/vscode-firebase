@@ -2,7 +2,7 @@ import * as vscode from 'vscode'
 import path from 'path'
 import api from '../firebase/api'
 import { configStore } from '../firebase/config-store'
-import { detectProjectForFile } from '../firebase/detect-project'
+import { detectProjectNameForFile } from '../firebase/detect-project'
 
 const API_VERSION = 'v1'
 
@@ -75,7 +75,7 @@ export class DiagnosticProvider {
       return
     }
 
-    const project = await detectProjectForFile(doc.uri)
+    const project = await detectProjectNameForFile(doc.uri)
 
     if (!project) {
       if (!this.hadNotifiedForMissingProject[doc.uri.path]) {

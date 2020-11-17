@@ -2,11 +2,11 @@ import { TextDecoder } from 'util'
 import * as vscode from 'vscode'
 import { configStore } from './config-store'
 
-const memory: Map<vscode.Uri, vscode.Uri> = new Map()
+const { fs } = vscode.workspace
+
+const memory: Map<string, vscode.Uri> = new Map()
 
 async function exists(path: vscode.Uri) {
-  const { fs } = vscode.workspace
-
   try {
     await fs.readFile(path)
     return true
@@ -16,7 +16,7 @@ async function exists(path: vscode.Uri) {
 }
 
 async function detectProjectRoot(cwd: vscode.Uri) {
-  const existingRoot = memory.get(cwd)
+  const existingRoot = memory.get(cwd.path)
   if (existingRoot && (await exists(existingRoot))) {
     return existingRoot
   }
@@ -34,10 +34,7 @@ async function detectProjectRoot(cwd: vscode.Uri) {
   return projectRootDir
 }
 
-export async function detectProjectForFile(filePath: vscode.Uri) {
-  const { fs } = vscode.workspace
-  const activeProjects = configStore.get('activeProjects') || {}
-
+export async function detectProjectRootForFile(filePath: vscode.Uri) {
   const cwd = vscode.Uri.joinPath(filePath, '../')
 
   const projectRoot = await detectProjectRoot(cwd)
@@ -46,7 +43,19 @@ export async function detectProjectForFile(filePath: vscode.Uri) {
     return undefined
   }
 
-  memory.set(cwd, projectRoot)
+  memory.set(cwd.path, projectRoot)
+
+  return projectRoot
+}
+
+export async function detectProjectNameForFile(filePath: vscode.Uri) {
+  const projectRoot = await detectProjectRootForFile(filePath)
+
+  if (!projectRoot) {
+    return undefined
+  }
+
+  const activeProjects = configStore.get('activeProjects') || {}
 
   let projectName =
     activeProjects[projectRoot.path] ||
